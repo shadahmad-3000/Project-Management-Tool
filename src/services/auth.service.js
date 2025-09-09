@@ -17,7 +17,8 @@ const signUp = async (body) => {
         if (existingUser) {
             return {
                 status: httpStatus.BAD_REQUEST,
-                message: "Employee already exist with this mail"
+                message: "Employee already exist with this mail",
+                data: null
             }
         }
         const salt = await bcrypt.genSalt(10);
@@ -32,20 +33,22 @@ const signUp = async (body) => {
             designation,
             isVerified: false,
             isApproved: false,
-        })
-        await OTPService.sentOTP({ email });
+        });
+        console.log("User Registerd:", newUser);
 
-        console.log("User Registerd", newUser);
+        const otpRes = await OTPService.sentOTP({ email });
+
         return {
             status: httpStatus.OK,
-            message: "User Registered Successfully",
-            data: newUser,
+            message: otpRes?.message,
+            data: newUser
         }
     } catch (error) {
         console.error(error?.message || error);
         return {
             status: httpStatus.BAD_GATEWAY,
-            message: "Failed to registed User"
+            message: "Failed to registed User",
+            data: null
         }
     }
 };

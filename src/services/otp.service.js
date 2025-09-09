@@ -12,7 +12,7 @@ const sentOTP = async (body) => {
         const expires = Date.now() + 5 * 60 * 1000;
 
         const mailbody = {
-            from: '"AutoPe Payment Solution"youremail@gmail.com',
+            from: '"AutoPe Payment Solutions',
             to: email,
             subject: "Your OTP Code",
             text: `Your OTP is ${otp} and valid for 5 minutes`
@@ -21,13 +21,13 @@ const sentOTP = async (body) => {
         const mail = await mailer.sendMail(mailbody);
         console.log("Mail sent", mail);
         //otp to store in db
-        const dataForDb = {
+        const otpData = {
             email: email,
             otp: otp,
             expires: expires,
             isUsed: false
         }
-        await OTP.create(dataForDb)
+        await OTP.create(otpData);
 
         return {
             status: httpStatus.OK,
@@ -36,7 +36,7 @@ const sentOTP = async (body) => {
     } catch (error) {
         console.error(error?.message || error);
         return {
-            status: httpStatus.BAD_GATEWAY,
+            status: httpStatus.INTERNAL_SERVER_ERROR,
             message: "Failed to sent OTP"
         }
     }
