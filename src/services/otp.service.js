@@ -1,23 +1,14 @@
 const mailer = require("../utils/mailer");
 const { status: httpStatus } = require("http-status");
-const { OTP } = require("../models/otp.model")
+const { OTP, User } = require("../models");
 const moment = require("moment");
 const ApiError = require("../utils/apiError");
-const { User } = require("../models/user.model");
 
-//let otpStore = {}
 
 const sentOTP = async (body) => {
     try {
         const { email } = body;
-        if (!email) {
-            return {
-                status: httpStatus.status.BAD_REQUEST,
-                message: "Email is required"
-            }
-        }
         const otp = Math.floor(100000 + Math.random() * 900000);
-        // otpStore[email] = { otp, expires: Date.now() + 5 * 60 * 1000 };
         const expires = Date.now() + 5 * 60 * 1000;
 
         const mailbody = {
@@ -49,13 +40,11 @@ const sentOTP = async (body) => {
             message: "Failed to sent OTP"
         }
     }
-}
+};
+
 const resendOTP = async (body) => {
     try {
         const { email } = body;
-        if (!email) {
-            throw new ApiError(httpStatus.BAD_REQUEST, "Email is required");
-        }
         const existingOTP = await OTP.findOne({ email }).sort({ _id: -1 });
         if (existingOTP) {
             const now = moment();
@@ -103,12 +92,6 @@ const resendOTP = async (body) => {
 const verifyOTP = async (body) => {
     try {
         const { email, otp } = body;
-        if (!email || !otp) {
-            return {
-                status: httpStatus.BAD_REQUEST,
-                message: "Email or OTP is requried"
-            }
-        }
         const record = await OTP.findOne({ email }).sort({ _id: -1 });
         if (!record) {
             return {

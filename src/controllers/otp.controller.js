@@ -1,9 +1,9 @@
-const otpService = require("../services/otp.service");
+const { OTPService } = require("../services");
 const { status: httpStatus } = require("http-status");
 
 const otpsent = async (req, res) => {
     try {
-        const result = await otpService.sentOTP(req.body);
+        const result = await OTPService.sentOTP(req.body);
         return res.status(httpStatus.OK).json({
             status: httpStatus.OK,
             message: "OTP send Successfully",
@@ -20,7 +20,7 @@ const otpsent = async (req, res) => {
 
 const otpresend = async (req, res) => {
     try {
-        const result = await otpService.resendOTP(req.body);
+        const result = await OTPService.resendOTP(req.body);
         if (!result) {
             return res.status(httpStatus.OK).json({
                 status: httpStatus.OK,
@@ -43,14 +43,14 @@ const otpresend = async (req, res) => {
 
 const otpverify = async (req, res) => {
     try {
-        const result = await otpService.verifyOTP(req.body);
+        const result = await OTPService.verifyOTP(req.body);
         res.send(result);
     } catch (error) {
         console.error(error?.message || error);
-        return {
-            status: httpStatus.OK,
-            message: "Internal Server Error"
-        }
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            status: httpStatus.INTERNAL_SERVER_ERROR,
+            message:"Internal Server Error"
+        })
     }
 };
 

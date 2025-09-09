@@ -1,22 +1,18 @@
-const { User } = require("../models/user.model");
 const { status: httpStatus } = require("http-status");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv");
 const ApiError = require("../utils/apiError");
-const { sentOTP } = require("../services/otp.service")
-dotenv.config();
+const { OTPService } = require("../services")
+const { User } = require("../models");
+const config = require("../utils/config");
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
+const JWT_SECRET = config?.JWT_SECRET;
+const JWT_EXPIRES_IN = config?.JWT_EXPIRES_IN;
 
 //User Registration
 const signUp = async (body) => {
     try {
         const { email, password, name, empID, phoneNo, designation } = body;
-        if (!email || !password || !name || !empID || !phoneNo || !designation) {
-            throw new ApiError(httpStatus.BAD_REQUEST, "All fields must be provided");
-        }
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return {
@@ -35,9 +31,10 @@ const signUp = async (body) => {
             phoneNo,
             designation,
             isVerified: false,
-            isApproved:false,
+            isApproved: false,
         })
-        await sentOTP({ email });
+        await OTPService.sentOTP({ email });
+
         console.log("User Registerd", newUser);
         return {
             status: httpStatus.OK,
@@ -56,9 +53,6 @@ const signUp = async (body) => {
 const signin = async (body) => {
     try {
         const { email, password } = body;
-        if (!email || !password) {
-            throw new ApiError(httpStatus.BAD_REQUEST, "Email or Password is required");
-        }
         const user = await User.findOne({ email });
         if (!user) {
             return {
@@ -74,10 +68,10 @@ const signin = async (body) => {
             };
         }
         //check user is approved or not
-        if(!user.isApproved){
-            return{
-                status:httpStatus.UNAUTHORIZED,
-                message:"Your Account needs approval from Super-Admin"
+        if (!user.isApproved) {
+            return {
+                status: httpStatus.UNAUTHORIZED,
+                message: "Your Account needs approval from Super-Admin"
             }
         }
         const passMatch = await bcrypt.compare(password, user.password);
@@ -114,10 +108,6 @@ const signin = async (body) => {
 const logout = async (body) => {
     try {
         const { email } = body;
-        if (!email) {
-            throw new ApiError(httpStatus.BAD_REQUEST, "Email is Required");
-        }
-
         const existingUser = await User.findOne({ email });
         if (!existingUser) {
             return {
@@ -139,9 +129,10 @@ const logout = async (body) => {
             message: "Failed to Log Out"
         }
     }
-}
+};
+
 module.exports = {
     signin,
     signUp,
     logout
-}
+};

@@ -32,6 +32,10 @@ const userUpdate = async (req, res) => {
         res.send(result);
     } catch (error) {
         console.error(error?.message || error);
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            status: httpStatus.INTERNAL_SERVER_ERROR,
+            message:"Internal Server Error"
+        })
     }
 }
 const userGet = async (req,res) => {

@@ -1,15 +1,11 @@
-const { User } = require("../models/user.model");
+const { User } = require("../models");
 const { status: httpStatus } = require("http-status");
 const ApiError = require("../utils/apiError");
-
-
 
 const deleteUser = async (param) => {
     try {
         const { empID } = param;
-        if (!empID) {
-            throw new ApiError(httpStatus.BAD_REQUEST, "empID is required");
-        }
+
         const deletedUser = await User.findOneAndDelete({ empID });
         if (!deletedUser) {
             throw new ApiError(httpStatus.NOT_FOUND, `User not found with empId: ${empID}`);
@@ -63,12 +59,7 @@ const updateUser = async (param, body) => {
 const getUsers = async () => {
     try {
         const allUsers = await User.find();
-        if (!allUsers) {
-            return {
-                status: httpStatus.status.BAD_REQUEST,
-                message: "Users Not found",
-            }
-        }
+    
         return {
             status: httpStatus.status.OK,
             message: "All Users are here",
