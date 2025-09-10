@@ -87,7 +87,7 @@ const signin = async (body) => {
 
         //generate jwt
         const token = jwt.sign(
-            { id: user._id, email: user.email, role: user.role },
+            { id: user._id, email: user.email },
             JWT_SECRET,
             { expiresIn: JWT_EXPIRES_IN }
         )
@@ -107,7 +107,8 @@ const signin = async (body) => {
             message: "Failed to signin"
         }
     }
-}
+};
+
 const logout = async (body) => {
     try {
         const { email } = body;

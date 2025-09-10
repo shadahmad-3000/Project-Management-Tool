@@ -23,7 +23,7 @@ const projectSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ["Not Started", "Pending", "In-Progress", "Completed", "On-Hold"],
+            enum: ["Not Started", "Pending", "In Progress", "Completed", "On Hold"],
             default: "Not Started",
         },
         priority: {
@@ -37,11 +37,13 @@ const projectSchema = new mongoose.Schema(
             required: true,
             index: true,
         },
-        assignedTo: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Team",
-            index: true,
-        }
+        assignedTo: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Team",
+                index: true,
+            }
+        ],
     },
     {
         timestamps: true

@@ -26,7 +26,7 @@ const declineUser = asyncHandler(async (req,res) => {
 });
 
 const roleAssign = asyncHandler(async (req, res) => {
-    const result = await SuperAdminService.roleAssign(req.body);
+    const result = await SuperAdminService.assignRole(req.body);
     res.status(result?.status).json(result);
 });
 
@@ -38,7 +38,17 @@ const projectCreate = asyncHandler(async (req,res) => {
 const projectUpdate = asyncHandler(async (req,res) => {
     const result = await SuperAdminService.updateProject(req.body);
     res.status(result?.status).json(result);
-})
+});
+
+const taskcreate = asyncHandler(async (req,res) => {
+    const result = await SuperAdminService.createTask(req.body);
+    res.status(result?.status).json(result);
+});
+
+const taskUpdate = asyncHandler(async (req,res) => {
+    const result = await SuperAdminService.updateTask(req.body);
+    res.status(result?.message).json(result)
+});
 
 module.exports = {
     usersAdd,
@@ -47,5 +57,7 @@ module.exports = {
     declineUser,
     roleAssign,
     projectCreate,
-    projectUpdate
+    projectUpdate,
+    taskcreate,
+    taskUpdate
 };

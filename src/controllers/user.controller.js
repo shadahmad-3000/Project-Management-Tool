@@ -1,5 +1,4 @@
 const userService = require("../services/user.service");
-const { status: httpStatus } = require("http-status");
 const asyncHandler = require("../utils/async.handler");
 
 const userDelete = asyncHandler(async (req, res) => {

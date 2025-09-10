@@ -1,12 +1,13 @@
 const ApiError = require("../utils/apiError");
 const moment = require("moment");
-const { status: httpStatus, default: status } = require("http-status");
-const { User, Project } = require("../models");
+const { status: httpStatus } = require("http-status");
+const { User, Project, Task } = require("../models");
+const { required } = require("joi");
 
 const addUsers = async (body) => {
     try {
         const { name, email, password, empID, designation, phoneNo, department } = body;
-        
+
         const user = await User.create({
             name,
             email,
@@ -31,8 +32,8 @@ const addUsers = async (body) => {
         console.error(error?.message || error);
         return {
             status: httpStatus.INTERNAL_SERVER_ERROR,
-            message:error?.message || "Internal Server Error"
-        }  
+            message: error?.message || "Internal Server Error"
+        }
     }
 };
 
@@ -167,7 +168,6 @@ const createProject = async (body) => {
             createdBy,
             assignedTo
         });
-
         return {
             status: httpStatus.OK,
             message: "Project Created Successfully",
@@ -211,6 +211,71 @@ const updateProject = async (body) => {
     }
 };
 
+const createTask = async (body) => {
+    try {
+        const { taskName, taskId, description, assignedBy, assignedTo, taskStatus, taskduration, taskPriority } = body;
+
+        const task = await Task.create({
+            taskName,
+            taskId,
+            description,
+            assignedBy,
+            assignedTo,
+            taskStatus,
+            taskduration,
+            taskPriority
+        });
+        console.log("Task Created", task);
+        if (!task) {
+            return {
+                status: httpStatus.NOT_FOUND,
+                message: error?.message || "Task Not Created"
+            }
+        }
+        return {
+            status: httpStatus.OK,
+            message: "Task Created Successfully",
+            data: task
+        }
+    } catch (error) {
+        console.error(error?.message || error);
+        return {
+            status: httpStatus.BAD_GATEWAY,
+            message: error?.message || "Internal Server Error"
+        }
+    }
+};
+
+const updateTask = async (body) => {
+    try {
+        const { taskId, updateTask } = body;
+        
+        const task = await Task.findOneAndUpdate(
+            { taskId: taskId },
+            { $set: { updateTask } },
+            { new: true }
+        );
+        console.log("Task Updated", task);
+        if (!task) {
+            return{
+                status: httpStatus.NOT_FOUND,
+                message:eror?.message || "Task Not Found"
+            }
+        };
+        return{
+            status: httpStatus.OK,
+            message:"Task Updated Successfully",
+            data: task
+        }
+    } catch (error) {
+        console.error(error?.message || error);
+        return{
+            status: httpStatus.BAD_GATEWAY,
+            message: error?.message || "Failed To update task"
+        }  
+    }
+};
+
 module.exports = {
     addUsers,
     getPendingUsers,
@@ -218,5 +283,7 @@ module.exports = {
     declineUser,
     assignRole,
     createProject,
-    updateProject
+    updateProject,
+    createTask,
+    updateTask
 };

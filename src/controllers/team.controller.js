@@ -1,4 +1,3 @@
-const { status: httpStatus } = require("http-status");
 const { TeamService } = require("../services");
 const asyncHandler = require("../utils/async.handler");
 

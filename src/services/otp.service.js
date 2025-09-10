@@ -59,10 +59,10 @@ const resendOTP = async (body) => {
             }
         }
         const otp = Math.floor(100000 + Math.random() * 900000);
-        const expires = Date.now() + 5 * 60 * 1000;
+        const expires = Date.now() + 3 * 60 * 1000;
 
         const mailbody = {
-            from: '"AutoPe Payment Solution" <youremail@gmail.com>',
+            from: "AutoPe Payment Solution",
             to: email,
             subject: "Your Resend OTP Code",
             text: `Your OTP is ${otp} and valid for 3 minutes`
@@ -99,20 +99,27 @@ const verifyOTP = async (body) => {
                 message: "OTP not sent to this mail"
             }
         }
-        if (Date.now() > record.expires) {
+        if (Date.now() > record?.expires) {
             return {
                 status: httpStatus.BAD_REQUEST,
                 message: "OTP is Expired"
             }
         }
-        if (parseInt(otp) == record.otp) {
+        if (parseInt(otp) == record?.otp) {
             record.isUsed = true;
             await record.save();
 
-            await User.updateOne({ email }, { isVerified: true });
+            await User.findOneAndUpdate(
+                { email },
+                {
+                    $set: {
+                        isVerified: true
+                    }
+                }
+            );
             return {
                 status: httpStatus.OK,
-                message: "OTP verified Successfully, Now kindly wait for Super-Admin Approval",
+                message: "OTP verified Successfully, Now kindly wait for Admin Approval"
             }
         } else {
             return {
@@ -127,7 +134,8 @@ const verifyOTP = async (body) => {
             message: "Failed to verify OTP"
         }
     }
-}
+};
+
 module.exports = {
     sentOTP,
     verifyOTP,

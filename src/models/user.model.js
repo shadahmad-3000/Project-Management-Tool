@@ -55,7 +55,7 @@ const userSchema = new mongoose.Schema(
         },
         nearestMetroStation: {
             type: String,
-            requrired: false
+            required: false
         },
         transportType: {
             type: String,
