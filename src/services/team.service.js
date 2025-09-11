@@ -53,7 +53,31 @@ const updateTeam = async (body) => {
     }
 };
 
+const getTeam = async () => {
+    try {
+        const allTeams = await Team.find();
+        if(!allTeams){
+            return{
+                status: httpStatus.NOT_FOUND,
+                message:"Teams Not Found"
+            }
+        };
+        return{
+            status: httpStatus.OK,
+            message:"All Team Fetch Successfully",
+            data: allTeams
+        }
+    } catch (error) {
+        console.error(error?.message || error);
+        return{
+            status: httpStatus.BAD_REQUEST,
+            message:"Failed to fetch teams"
+        }
+    }
+};
+
 module.exports = {
     createTeam,
-    updateTeam
+    updateTeam,
+    getTeam
 }

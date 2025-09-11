@@ -180,7 +180,8 @@ const createProject = async (body) => {
             message: error?.message || "Internal Server Error"
         }
     }
-}
+};
+
 const updateProject = async (body) => {
     try {
         const { projectCode, update } = body;
@@ -249,7 +250,7 @@ const createTask = async (body) => {
 const updateTask = async (body) => {
     try {
         const { taskId, updateTask } = body;
-        
+
         const task = await Task.findOneAndUpdate(
             { taskId: taskId },
             { $set: { updateTask } },

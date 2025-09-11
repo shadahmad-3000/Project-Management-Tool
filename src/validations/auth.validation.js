@@ -49,9 +49,7 @@ const logoutValidation = Joi.object({
                 "string.empty": "Email is required",
                 "string.email": "Email must be a valid email address"
             }),
-    }),
-
-    
+    }), 
 });
 
 
