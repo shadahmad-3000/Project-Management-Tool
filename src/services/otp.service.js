@@ -1,4 +1,4 @@
-const mailer = require("../utils/mailer");
+const { mailer, sendEmail } = require("../utils/mailer");
 const { status: httpStatus } = require("http-status");
 const { OTP, User } = require("../models");
 const moment = require("moment");

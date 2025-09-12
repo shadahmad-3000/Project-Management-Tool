@@ -54,7 +54,7 @@ const taskSchema = new mongoose.Schema(
                 set: (v) => moment(v, "YYYY-MM-DD HH:mm").toDate()
             },
             endDate: {
-                type: String,
+                type: Date,
                 get: (v) => moment(v).format("YYYY-MM-DD"),
                 set: (v) => (v, "YYYY-MM-DD HH:mm").toDate()
             }
