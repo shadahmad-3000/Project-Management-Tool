@@ -6,15 +6,15 @@ dotenv.config()
 const mailer = nodemailer.createTransport({
     service: "gmail",
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: "mohdshadahmad786@gmail.com",
+        pass: "getwaehpcjgknubu",
     },
 });
 
 const sendEmail = async (to,subject,text) => {
     try {
         let info = await mailer.sendMail({
-            from: process.env.EMAIL_USER,
+            from: "mohdshadahmad786@gmail.com",
             to,
             subject,
             text

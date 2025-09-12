@@ -1,18 +1,18 @@
-const authService = require("../services/auth.service");
+const { AuthService } = require("../services");
 const asyncHandler = require("../utils/async.handler");
 
 const signup = asyncHandler(async (req, res) => {
-    const result = await authService.signUp(req.body);
+    const result = await AuthService.signUp(req.body);
     res.status(result?.status).json(result);
 });
 
-const signIn = asyncHandler(async (req,res) => {
-    const result = await authService.signin(req.body);
+const signIn = asyncHandler(async (req, res) => {
+    const result = await AuthService.signin(req.body);
     res.status(result?.status).json(result);
 });
 
-const LogOut = asyncHandler(async (req,res) => {
-    const result = await authService.logout(req.body);
+const LogOut = asyncHandler(async (req, res) => {
+    const result = await AuthService.logout(req.body);
     res.status(result?.status).json(result);
 });
 

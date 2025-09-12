@@ -8,8 +8,8 @@ const { authorizeRoles } = require("../middlewares/role.middleware");
 const enums = require("../utils/enums");
 
 router.post("/add-users", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.addUserValidation), SuperAdminController.usersAdd);
-router.get("/pending-users", verifyToken, authorizeRoles(enums.ACCESS), validate(superAdminValidation.getPendingUsersValidation), SuperAdminController.getPendingUsers),
-router.put("/approve-users/:id", verifyToken, authorizeRoles(enums.ACCESS), validate(superAdminValidation.approveUserValidation), SuperAdminController.approveUser),
+router.get("/pending-users", verifyToken, authorizeRoles(enums.ACCESS), validate(superAdminValidation.getPendingUsersValidation), SuperAdminController.getPendingUsers);
+router.put("/approve-users/:id", verifyToken, authorizeRoles(enums.ACCESS), validate(superAdminValidation.approveUserValidation), SuperAdminController.approveUser);
 router.delete("/decline-user/:id", verifyToken, authorizeRoles(enums.ACCESS), validate(superAdminValidation.declineUserValidation), SuperAdminController.declineUser);
 router.post("/assign-role", verifyToken, authorizeRoles(enums.ACCESS), validate(superAdminValidation.assignRoleValidation), SuperAdminController.roleAssign);
 

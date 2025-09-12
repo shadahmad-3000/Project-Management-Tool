@@ -26,7 +26,7 @@ const taskSchema = new mongoose.Schema(
         assignedTo: [
             {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: "Team",
+                ref: "User",
                 required: true,
                 index: true
             }
@@ -56,7 +56,7 @@ const taskSchema = new mongoose.Schema(
             endDate: {
                 type: Date,
                 get: (v) => moment(v).format("YYYY-MM-DD HH:mm"),
-                set: (v) => (v, "YYYY-MM-DD HH:mm").toDate()
+                set: (v) => moment(v, "YYYY-MM-DD HH:mm").toDate()
             }
         },
         taskPriority: {
@@ -65,13 +65,13 @@ const taskSchema = new mongoose.Schema(
             enum: ["Low", "Medium", "High"],
             default: "Medium"
         },
-        halfTimeNotified: { 
-            type: Boolean, 
-            default: false 
+        halfTimeNotified: {
+            type: Boolean,
+            default: false
         },
-        deadlineMissedNotified: { 
-            type: Boolean, 
-            default: false 
+        deadlineMissedNotified: {
+            type: Boolean,
+            default: false
         }
     },
     {
