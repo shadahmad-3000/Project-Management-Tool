@@ -212,9 +212,32 @@ const updateProject = async (body) => {
     }
 };
 
+const getProject = async (params) => {
+    try {
+        const allProject = await Project.find();
+        if (!allProject) {
+            return {
+                status: httpStatus.NOT_FOUND,
+                message: "Project's Not Found"
+            }
+        }
+        return {
+            status: httpStatus.OK,
+            message: "Project Fetch Successfully",
+            data: allProject
+        }
+    } catch (error) {
+        console.error(error?.message || error);
+        return {
+            status: httpStatus.BAD_GATEWAY,
+            message: error?.message || "Internal Server Error"
+        }
+    }
+};
+
 const createTask = async (body) => {
     try {
-        const { taskName, taskId, description, assignedBy, assignedTo, taskStatus, taskduration, taskPriority } = body;
+        const { taskName, taskId, description, assignedBy, assignedTo, assigneeEmail, taskStatus, taskduration, taskDeadline, taskPriority } = body;
 
         const task = await Task.create({
             taskName,
@@ -222,8 +245,10 @@ const createTask = async (body) => {
             description,
             assignedBy,
             assignedTo,
+            assigneeEmail,
             taskStatus,
             taskduration,
+            taskDeadline,
             taskPriority
         });
         console.log("Task Created", task);
@@ -258,22 +283,45 @@ const updateTask = async (body) => {
         );
         console.log("Task Updated", task);
         if (!task) {
-            return{
+            return {
                 status: httpStatus.NOT_FOUND,
-                message:eror?.message || "Task Not Found"
+                message: eror?.message || "Task Not Found"
             }
         };
-        return{
+        return {
             status: httpStatus.OK,
-            message:"Task Updated Successfully",
+            message: "Task Updated Successfully",
             data: task
         }
     } catch (error) {
         console.error(error?.message || error);
-        return{
+        return {
             status: httpStatus.BAD_GATEWAY,
             message: error?.message || "Failed To update task"
-        }  
+        }
+    }
+};
+
+const getTask = async () => {
+    try {
+        const allTask = await Task.find();
+        if (!allTask) {
+            return {
+                status: httpStatus.NOT_FOUND,
+                message: "Task Not Found"
+            }
+        };
+        return {
+            status: httpStatus.OK,
+            message:"All Task Fetch Successfully",
+            data: allTask
+        }
+    } catch (error) {
+        console.error(error?.message || error);
+        return {
+            status: httpStatus.BAD_GATEWAY,
+            message:"Failed to fetch tasks"
+        }
     }
 };
 
@@ -285,6 +333,8 @@ module.exports = {
     assignRole,
     createProject,
     updateProject,
+    getProject,
     createTask,
-    updateTask
+    updateTask,
+    getTask
 };

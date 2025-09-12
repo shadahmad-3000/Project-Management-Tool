@@ -40,6 +40,11 @@ const projectUpdate = asyncHandler(async (req,res) => {
     res.status(result?.status).json(result);
 });
 
+const projectGet = asyncHandler(async (req,res) => {
+    const result = await SuperAdminService.getProject();
+    res.status(result?.status).json(result);
+})
+
 const taskcreate = asyncHandler(async (req,res) => {
     const result = await SuperAdminService.createTask(req.body);
     res.status(result?.status).json(result);
@@ -50,6 +55,11 @@ const taskUpdate = asyncHandler(async (req,res) => {
     res.status(result?.message).json(result)
 });
 
+const taskGet = asyncHandler(async (req,res) => {
+    const result = await SuperAdminService.getTask();
+    res.status(result?.status).json(result);
+})
+
 module.exports = {
     usersAdd,
     getPendingUsers,
@@ -58,6 +68,8 @@ module.exports = {
     roleAssign,
     projectCreate,
     projectUpdate,
+    projectGet,
     taskcreate,
-    taskUpdate
+    taskUpdate,
+    taskGet
 };

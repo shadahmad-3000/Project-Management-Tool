@@ -12,11 +12,14 @@ router.get("/pending-users", verifyToken, authorizeRoles(enums.ACCESS), validate
 router.put("/approve-users/:id", verifyToken, authorizeRoles(enums.ACCESS), validate(superAdminValidation.approveUserValidation), SuperAdminController.approveUser),
 router.delete("/decline-user/:id", verifyToken, authorizeRoles(enums.ACCESS), validate(superAdminValidation.declineUserValidation), SuperAdminController.declineUser);
 router.post("/assign-role", verifyToken, authorizeRoles(enums.ACCESS), validate(superAdminValidation.assignRoleValidation), SuperAdminController.roleAssign);
+
 router.post("/create-project", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.createProjectValidation), SuperAdminController.projectCreate);
 router.post("/update-project", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.updateProjectValidation), SuperAdminController.projectUpdate);
+router.get("/get-project",verifyToken,authorizeRoles(enums.MANAGEMENT),SuperAdminController.projectGet);
 
 router.post("/create-task", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.createTaskValidation), SuperAdminController.taskcreate);
 router.post("/update-task", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.updateTaskValidation), SuperAdminController.taskUpdate);
+router.get("/get-task",verifyToken,authorizeRoles(enums.ACCESS),SuperAdminController.taskGet);
 
 
 module.exports = router;

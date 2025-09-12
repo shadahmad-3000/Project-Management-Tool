@@ -10,4 +10,4 @@ app.listen(port, async () => {
     } catch (error) {
         console.error("Error in running Server");
     }
-})
+});

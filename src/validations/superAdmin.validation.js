@@ -119,8 +119,8 @@ const createProjectValidation = Joi.object({
     projectCode: Joi.string().required().messages({ "string.empty": "Project Code is required" }),
     startDate: Joi.date().iso().required().messages({ "date.base": "Start Date must be valid ISO date" }),
     endDate: Joi.date().iso().greater(Joi.ref("startDate")).messages({ "date.greater": "End Date must be after Start Date" }),
-    status: Joi.string().valid("Not Started", "In Progress", "Completed", "On Hold").optional(),
-    priority: Joi.string().valid("Low", "Medium", "High", "Critical").optional(),
+    status: Joi.string().valid("Not Started", "Pending" ,"In Progress", "Completed", "On Hold").optional(),
+    priority: Joi.string().valid("Low", "Medium", "High").optional(),
     createdBy: Joi.string().required().messages({ "string.empty": "CreatedBy is required" }),
     assignedTo: Joi.array().items(Joi.string())
   }),
@@ -153,11 +153,40 @@ const createTaskValidation = Joi.object({
       .min(1)
       .required()
       .messages({ "array.min": "At least one AssignedTo is required" }),
+    assigneeEmail: Joi.array()
+      .items(
+        Joi.string()
+          .email()
+          .required()
+          .messages({ "string.email": "Invalid email format", "string.empty": "Email cannot be empty" })
+      )
+      .min(1)
+      .required()
+      .messages({ "array.min": "At least one assignee email is required" }),
     taskStatus: Joi.string()
       .valid("Not Started", "Pending", "In Progress", "Completed", "On Hold")
       .required()
       .messages({ "any.only": "Invalid Task Status" }),
-    taskduration: Joi.number().required().messages({ "number.base": "Task Duration must be a number" }),
+    taskduration: Joi.string().required().messages({ "string.empty": "Task Duration is required" }),
+    taskDeadline: Joi.object({
+      startDate: Joi.date()
+        .min("now")
+        .required()
+        .messages({
+          "date.base": "Start Date must be a valid date",
+          "date.min": "Start Date cannot be in the past",
+          "any.required": "Start Date is required"
+        }),
+      endDate: Joi.date()
+        .greater(Joi.ref('startDate'))
+        .required()
+        .messages({
+          "date.base": "End Date must be a valid date",
+          "date.greater": "End Date must be after Start Date",
+          "any.required": "End Date is required"
+        })
+    }).required()
+      .messages({ "any.required": "Task Deadline is required" }),
     taskPriority: Joi.string()
       .valid("Low", "Medium", "High")
       .required()

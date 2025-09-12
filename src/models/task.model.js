@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const moment = require("moment");
 
 const taskSchema = new mongoose.Schema(
     {
@@ -6,9 +7,9 @@ const taskSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        taskId:{
-            type:String,
-            required:true,
+        taskId: {
+            type: String,
+            required: true,
             unique: true,
             index: true
         },
@@ -30,6 +31,12 @@ const taskSchema = new mongoose.Schema(
                 index: true
             }
         ],
+        assigneeEmail: [
+            {
+                type: String,
+                required: true
+            }
+        ],
         taskStatus: {
             type: String,
             required: true,
@@ -37,8 +44,20 @@ const taskSchema = new mongoose.Schema(
             default: "Not-Started"
         },
         taskduration: {
-            type: Number,
+            type: String,
             required: true,
+        },
+        taskDeadline: {
+            startDate: {
+                type: Date,
+                get: (v) => moment(v).format("YYYY_MM_DD HH:mm"),
+                set: (v) => moment(v, "YYYY-MM-DD HH:mm").toDate()
+            },
+            endDate: {
+                type: String,
+                get: (v) => moment(v).format("YYYY-MM-DD"),
+                set: (v) => (v, "YYYY-MM-DD HH:mm").toDate()
+            }
         },
         taskPriority: {
             type: String,

@@ -6,6 +6,7 @@ const userRouter = require("./routes/user.route");
 const superAdminRouter = require("./routes/superAdmin.route");
 const teamRouter = require("./routes/team.route");
 const cors = require("cors");
+const {} = require('./jobRunner/runner');
 
 app.use(cors({
     origin:"http://localhost:5173",

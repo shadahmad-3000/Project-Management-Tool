@@ -39,19 +39,19 @@ const updateUser = async (param, body) => {
 
         if (!user) {
             return {
-                status: httpStatus.status.BAD_REQUEST,
+                status: httpStatus.BAD_REQUEST,
                 message: "User Not Found"
             }
         }
         return {
-            status: httpStatus.status.OK,
+            status: httpStatus.OK,
             message: "User's Data Updated Successfully",
             data: user
         }
     } catch (error) {
         console.error(error?.message || error, "Internal Server Error");
         return {
-            status: httpStatus.status.BAD_GATEWAY,
+            status: httpStatus.BAD_GATEWAY,
             message: "Failed to update User Data"
         }
     }
@@ -61,14 +61,14 @@ const getUsers = async () => {
         const allUsers = await User.find();
     
         return {
-            status: httpStatus.status.OK,
+            status: httpStatus.OK,
             message: "All Users are here",
             data: allUsers
         }
     } catch (error) {
         console.error(error?.message || error, "Intertnal Server Error");
         return {
-            status: httpStatus.status.BAD_GATEWAY,
+            status: httpStatus.BAD_GATEWAY,
             message: "Error in Fetching Users!!!"
         }
     }
