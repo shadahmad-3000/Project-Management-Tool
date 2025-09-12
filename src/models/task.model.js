@@ -50,12 +50,12 @@ const taskSchema = new mongoose.Schema(
         taskDeadline: {
             startDate: {
                 type: Date,
-                get: (v) => moment(v).format("YYYY_MM_DD HH:mm"),
+                get: (v) => moment(v).format("YYYY-MM-DD HH:mm"),
                 set: (v) => moment(v, "YYYY-MM-DD HH:mm").toDate()
             },
             endDate: {
                 type: Date,
-                get: (v) => moment(v).format("YYYY-MM-DD"),
+                get: (v) => moment(v).format("YYYY-MM-DD HH:mm"),
                 set: (v) => (v, "YYYY-MM-DD HH:mm").toDate()
             }
         },
