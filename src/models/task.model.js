@@ -65,7 +65,14 @@ const taskSchema = new mongoose.Schema(
             enum: ["Low", "Medium", "High"],
             default: "Medium"
         },
-
+        halfTimeNotified: { 
+            type: Boolean, 
+            default: false 
+        },
+        deadlineMissedNotified: { 
+            type: Boolean, 
+            default: false 
+        }
     },
     {
         timestamps: true
