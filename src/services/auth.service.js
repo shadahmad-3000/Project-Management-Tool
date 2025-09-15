@@ -98,7 +98,8 @@ const signin = async (body) => {
         return {
             status: httpStatus.OK,
             message: "Signin Successfull",
-            token: token
+            token: token,
+            role: user?.role
         }
     } catch (error) {
         console.error(error?.message || error);
