@@ -16,4 +16,9 @@ const teamGet = asyncHandler(async (req, res) => {
     res.status(result?.status).json(result);
 });
 
-module.exports = { teamCreate, teamUpdate, teamGet }
+const getTeambyIdController = asyncHandler(async (req, res) => {
+    const result = await TeamService.getTeambyId();
+    res.status(result?.status).json(result);
+})
+
+module.exports = { teamCreate, teamUpdate, teamGet, getTeambyIdController }

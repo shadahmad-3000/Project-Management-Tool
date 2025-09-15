@@ -76,8 +76,32 @@ const getTeam = async () => {
     }
 };
 
+const getTeambyId = async () => {
+    try {
+        const allTeams = await Team.find();
+        if(!allTeams){
+            return{
+                status: httpStatus.NOT_FOUND,
+                message:"Team Not Found"
+            }
+        };
+        return{
+            status: httpStatus.OK,
+            message:"Team Fetch Successfully",
+            data: allTeams
+        }
+    } catch (error) {
+        console.error(error?.message || error);
+        return{
+            status: httpStatus.BAD_REQUEST,
+            message:"Failed to fetch team"
+        }
+    }
+};
+
 module.exports = {
     createTeam,
     updateTeam,
-    getTeam
+    getTeam,
+    getTeambyId
 }

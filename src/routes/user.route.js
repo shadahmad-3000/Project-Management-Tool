@@ -10,5 +10,6 @@ const enums = require("../utils/enums");
 router.delete("/delete-user/:empID", verifyToken, authorizeRoles(enums.ADMINS), validate(userValidation.deleteUserValidation), UserController.userDelete);
 router.put("/update-user/:empID", verifyToken, authorizeRoles(enums.ADMINS), validate(userValidation.updateUserValidation), UserController.userUpdate);
 router.get("/get-user", verifyToken, authorizeRoles(enums.MANAGEMENT), validate(userValidation.getUsersValidation), UserController.userGet);
+router.get("/getuserbyId",verifyToken,authorizeRoles(enums.MANAGEMENT),UserController.getUserbyIdController);
 
 module.exports = router;

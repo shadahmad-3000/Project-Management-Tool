@@ -239,6 +239,30 @@ const getProject = async (params) => {
     }
 };
 
+const getProjectbyId = async (params) => {
+    try {
+        const allProject = await Project.findOne();
+        if (!allProject) {
+            return {
+                status: httpStatus.NOT_FOUND,
+                message: "Project Not Found"
+            }
+        }
+        return {
+            status: httpStatus.OK,
+            message: "Project Fetch Successfully",
+            data: allProject
+        }
+    } catch (error) {
+        console.error(error?.message || error);
+        return {
+            status: httpStatus.BAD_GATEWAY,
+            message: error?.message || "Internal Server Error"
+        }
+    }
+};
+
+
 const createTask = async (body) => {
     try {
         const { taskName, taskId, description, assignedBy, assignedTo, assigneeEmail, taskStatus, taskduration, taskDeadline, taskPriority } = body;
@@ -329,6 +353,29 @@ const getTask = async () => {
     }
 };
 
+const getTaskbyId = async () => {
+    try {
+        const allTask = await Task.findOne();
+        if (!allTask) {
+            return {
+                status: httpStatus.NOT_FOUND,
+                message: "Task Not Found"
+            }
+        };
+        return {
+            status: httpStatus.OK,
+            message: "Task Fetch Successfully",
+            data: allTask
+        }
+    } catch (error) {
+        console.error(error?.message || error);
+        return {
+            status: httpStatus.BAD_GATEWAY,
+            message: "Failed to fetch task"
+        }
+    }
+};
+
 module.exports = {
     addUsers,
     getPendingUsers,
@@ -338,7 +385,9 @@ module.exports = {
     createProject,
     updateProject,
     getProject,
+    getProjectbyId,
     createTask,
     updateTask,
-    getTask
+    getTask,
+    getTaskbyId
 };

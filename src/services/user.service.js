@@ -72,9 +72,29 @@ const getUsers = async () => {
             message: "Error in Fetching Users!!!"
         }
     }
-}
+};
+
+const getUsersbyId = async () => {
+    try {
+        const allUsers = await User.find();
+    
+        return {
+            status: httpStatus.OK,
+            message: "User is here",
+            data: allUsers
+        }
+    } catch (error) {
+        console.error(error?.message || error, "Intertnal Server Error");
+        return {
+            status: httpStatus.BAD_GATEWAY,
+            message: "Error in Fetching User!!!"
+        }
+    }
+};
+
 module.exports = {
     deleteUser,
     updateUser,
-    getUsers
+    getUsers,
+    getUsersbyId
 }

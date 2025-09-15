@@ -1,5 +1,4 @@
 const { SuperAdminService } = require("../services");
-const { status: httpStatus } = require("http-status");
 const asyncHandler = require("../utils/async.handler");
 
 const usersAdd = asyncHandler(async (req,res) => {
@@ -43,7 +42,12 @@ const projectUpdate = asyncHandler(async (req,res) => {
 const projectGet = asyncHandler(async (req,res) => {
     const result = await SuperAdminService.getProject();
     res.status(result?.status).json(result);
-})
+});
+
+const getProjectbyIdController = asyncHandler(async (req,res) => {
+    const result = await SuperAdminService.getProjectbyId();
+    res.status(result?.status).json(result);
+});
 
 const taskcreate = asyncHandler(async (req,res) => {
     const result = await SuperAdminService.createTask(req.body);
@@ -52,13 +56,18 @@ const taskcreate = asyncHandler(async (req,res) => {
 
 const taskUpdate = asyncHandler(async (req,res) => {
     const result = await SuperAdminService.updateTask(req.body);
-    res.status(result?.message).json(result)
+    res.status(result?.status).json(result)
 });
 
 const taskGet = asyncHandler(async (req,res) => {
     const result = await SuperAdminService.getTask();
     res.status(result?.status).json(result);
-})
+});
+
+const getTaskbyIdController = asyncHandler(async (req,res) => {
+    const result = await SuperAdminService.getTaskbyId();
+    res.status(result?.status).json(result);
+});
 
 module.exports = {
     usersAdd,
@@ -69,7 +78,9 @@ module.exports = {
     projectCreate,
     projectUpdate,
     projectGet,
+    getProjectbyIdController,
     taskcreate,
     taskUpdate,
-    taskGet
+    taskGet,
+    getTaskbyIdController
 };
