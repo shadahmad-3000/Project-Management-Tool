@@ -3,15 +3,19 @@ const moment = require("moment");
 const { status: httpStatus } = require("http-status");
 const { User, Project, Task } = require("../models");
 const { required } = require("joi");
+const bcrypt = require("bcryptjs");
 
 const addUsers = async (body) => {
     try {
         const { name, email, password, empID, designation, phoneNo, department } = body;
 
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
         const user = await User.create({
             name,
             email,
-            password,
+            password:hashedPassword,
             empID,
             designation,
             phoneNo,
@@ -313,14 +317,14 @@ const getTask = async () => {
         };
         return {
             status: httpStatus.OK,
-            message:"All Task Fetch Successfully",
+            message: "All Task Fetch Successfully",
             data: allTask
         }
     } catch (error) {
         console.error(error?.message || error);
         return {
             status: httpStatus.BAD_GATEWAY,
-            message:"Failed to fetch tasks"
+            message: "Failed to fetch tasks"
         }
     }
 };
