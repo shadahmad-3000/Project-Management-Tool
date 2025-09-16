@@ -45,7 +45,7 @@ const projectGet = asyncHandler(async (req, res) => {
 });
 
 const getProjectbyIdController = asyncHandler(async (req, res) => {
-    const result = await SuperAdminService.getProjectbyId({ id: req.params.id });
+    const result = await SuperAdminService.getProjectbyId(req.params);
     res.status(result?.status).json(result);
 });
 
@@ -65,7 +65,7 @@ const taskGet = asyncHandler(async (req, res) => {
 });
 
 const getTaskbyIdController = asyncHandler(async (req, res) => {
-    const result = await SuperAdminService.getTaskbyId({ taskId: req.params.id });
+    const result = await SuperAdminService.getTaskbyId(req.params);
     res.status(result?.status).json(result);
 });
 

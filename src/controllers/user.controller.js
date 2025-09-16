@@ -17,7 +17,7 @@ const userGet = asyncHandler(async (req, res) => {
 });
 
 const getUserbyIdController = asyncHandler(async (req, res) => {
-    const result = await UserService.getUsersbyId({ id: req.params.id });
+    const result = await UserService.getUsersbyId(req.params);
     res.status(result?.status).json(result);
 });
 

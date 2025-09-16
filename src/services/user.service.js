@@ -59,7 +59,7 @@ const updateUser = async (param, body) => {
 const getUsers = async () => {
     try {
         const allUsers = await User.find();
-    
+
         return {
             status: httpStatus.OK,
             message: "All Users are here",
@@ -76,9 +76,8 @@ const getUsers = async () => {
 
 const getUsersbyId = async (param) => {
     try {
-        const {id} = param
-        const allUsers = await User.findById(id);
-    
+        const { empID } = param
+        const allUsers = await User.findOne({empID});
         return {
             status: httpStatus.OK,
             message: "User is here",

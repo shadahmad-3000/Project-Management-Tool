@@ -242,8 +242,8 @@ const getProject = async (params) => {
 
 const getProjectbyId = async (param) => {
     try {
-        const { id } = param
-        const allProject = await Project.findById(id);
+        const { projectCode } = param
+        const allProject = await Project.findOne({ projectCode });
         if (!allProject) {
             return {
                 status: httpStatus.NOT_FOUND,
@@ -357,7 +357,7 @@ const getTask = async () => {
 const getTaskbyId = async (param) => {
     try {
         const { taskId } = param
-        const allTask = await Task.findById(taskId);
+        const allTask = await Task.findOne({ taskId });
         if (!allTask) {
             return {
                 status: httpStatus.NOT_FOUND,

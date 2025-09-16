@@ -78,8 +78,8 @@ const getTeam = async () => {
 
 const getTeambyId = async (param) => {
     try {
-        const { id } = param
-        const allTeams = await Team.findById(id);
+        const { teamCode } = param
+        const allTeams = await Team.findOne({ teamCode });
         if (!allTeams) {
             return {
                 status: httpStatus.NOT_FOUND,

@@ -21,7 +21,7 @@ router.get("/getProjectbyId/:id", verifyToken, authorizeRoles(enums.MANAGEMENT),
 router.post("/create-task", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.createTaskValidation), SuperAdminController.taskcreate);
 router.post("/update-task", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.updateTaskValidation), SuperAdminController.taskUpdate);
 router.get("/get-task", verifyToken, authorizeRoles(enums.MANAGEMENT), SuperAdminController.taskGet);
-router.get("/gettaskbyId/:id", verifyToken, authorizeRoles(enums.MANAGEMENT), SuperAdminController.getTaskbyIdController);
+router.get("/gettaskbyId/:taskId", verifyToken, authorizeRoles(enums.MANAGEMENT), SuperAdminController.getTaskbyIdController);
 
 
 module.exports = router;

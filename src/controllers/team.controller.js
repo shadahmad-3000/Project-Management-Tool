@@ -17,7 +17,7 @@ const teamGet = asyncHandler(async (req, res) => {
 });
 
 const getTeambyIdController = asyncHandler(async (req, res) => {
-    const result = await TeamService.getTeambyId({ id: req.params.id });
+    const result = await TeamService.getTeambyId(req.params);
     res.status(result?.status).json(result);
 })
 
