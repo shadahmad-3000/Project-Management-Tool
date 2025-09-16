@@ -1,8 +1,7 @@
 const { status: httpStatus } = require("http-status");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const ApiError = require("../utils/apiError");
-const { OTPService } = require("../services")
+const OTPService = require("../services/otp.service")
 const { User } = require("../models");
 const config = require("../utils/config");
 
@@ -46,7 +45,7 @@ const signUp = async (body) => {
     } catch (error) {
         console.error(error?.message || error);
         return {
-            status: httpStatus.BAD_GATEWAY,
+            status: httpStatus.INTERNAL_SERVER_ERROR,
             message: "Failed to registed User",
             data: null
         }
@@ -78,6 +77,8 @@ const signin = async (body) => {
             }
         }
         const passMatch = await bcrypt.compare(password, user.password);
+        console.log("password match", passMatch);
+        
         if (!passMatch) {
             return {
                 status: httpStatus.UNAUTHORIZED,
