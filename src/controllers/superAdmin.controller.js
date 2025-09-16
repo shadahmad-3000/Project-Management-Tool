@@ -1,12 +1,12 @@
 const { SuperAdminService } = require("../services");
 const asyncHandler = require("../utils/async.handler");
 
-const usersAdd = asyncHandler(async (req,res) => {
+const usersAdd = asyncHandler(async (req, res) => {
     const result = await SuperAdminService.addUsers(req.body);
     res.status(result?.status).json(result);
 });
 
-const getPendingUsers = asyncHandler(async (req,res) => {
+const getPendingUsers = asyncHandler(async (req, res) => {
     const result = await SuperAdminService.getPendingUsers();
     res.status(result?.status).json(result);
 });
@@ -18,8 +18,8 @@ const approveUser = asyncHandler(async (req, res) => {
 
 });
 
-const declineUser = asyncHandler(async (req,res) => {
-    const {id} = req.params;
+const declineUser = asyncHandler(async (req, res) => {
+    const { id } = req.params;
     const result = await SuperAdminService.declineUser(id);
     res.status(result?.status).json(result);
 });
@@ -29,43 +29,43 @@ const roleAssign = asyncHandler(async (req, res) => {
     res.status(result?.status).json(result);
 });
 
-const projectCreate = asyncHandler(async (req,res) => {
+const projectCreate = asyncHandler(async (req, res) => {
     const result = await SuperAdminService.createProject(req.body);
     res.status(result?.status).json(result);
 });
 
-const projectUpdate = asyncHandler(async (req,res) => {
+const projectUpdate = asyncHandler(async (req, res) => {
     const result = await SuperAdminService.updateProject(req.body);
     res.status(result?.status).json(result);
 });
 
-const projectGet = asyncHandler(async (req,res) => {
+const projectGet = asyncHandler(async (req, res) => {
     const result = await SuperAdminService.getProject();
     res.status(result?.status).json(result);
 });
 
-const getProjectbyIdController = asyncHandler(async (req,res) => {
-    const result = await SuperAdminService.getProjectbyId();
+const getProjectbyIdController = asyncHandler(async (req, res) => {
+    const result = await SuperAdminService.getProjectbyId({ id: req.params.id });
     res.status(result?.status).json(result);
 });
 
-const taskcreate = asyncHandler(async (req,res) => {
+const taskcreate = asyncHandler(async (req, res) => {
     const result = await SuperAdminService.createTask(req.body);
     res.status(result?.status).json(result);
 });
 
-const taskUpdate = asyncHandler(async (req,res) => {
+const taskUpdate = asyncHandler(async (req, res) => {
     const result = await SuperAdminService.updateTask(req.body);
     res.status(result?.status).json(result)
 });
 
-const taskGet = asyncHandler(async (req,res) => {
+const taskGet = asyncHandler(async (req, res) => {
     const result = await SuperAdminService.getTask();
     res.status(result?.status).json(result);
 });
 
-const getTaskbyIdController = asyncHandler(async (req,res) => {
-    const result = await SuperAdminService.getTaskbyId();
+const getTaskbyIdController = asyncHandler(async (req, res) => {
+    const result = await SuperAdminService.getTaskbyId({ taskId: req.params.id });
     res.status(result?.status).json(result);
 });
 

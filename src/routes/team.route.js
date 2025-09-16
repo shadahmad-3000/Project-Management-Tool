@@ -10,6 +10,6 @@ const enums = require("../utils/enums");
 router.post("/create-team",verifyToken,authorizeRoles(enums.ADMINS), validate(teamValidation.createTeamValidation),TeamController.teamCreate);
 router.post("/update-team",verifyToken,authorizeRoles(enums.ADMINS),validate(teamValidation.updateTeamValidation),TeamController.teamUpdate);
 router.get("/get-teams",verifyToken,authorizeRoles(enums.MANAGEMENT),TeamController.teamGet);
-router.get("/getteamsbyId",verifyToken,authorizeRoles(enums.MANAGEMENT),TeamController.getTeambyIdController)
+router.get("/getteamsbyId/:id",verifyToken,authorizeRoles(enums.MANAGEMENT),TeamController.getTeambyIdController)
 
 module.exports = router;

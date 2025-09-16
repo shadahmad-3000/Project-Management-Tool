@@ -4,6 +4,7 @@ const { status: httpStatus } = require("http-status");
 const { User, Project, Task } = require("../models");
 const { required } = require("joi");
 const bcrypt = require("bcryptjs");
+const { param } = require("../app");
 
 const addUsers = async (body) => {
     try {
@@ -15,7 +16,7 @@ const addUsers = async (body) => {
         const user = await User.create({
             name,
             email,
-            password:hashedPassword,
+            password: hashedPassword,
             empID,
             designation,
             phoneNo,
@@ -239,9 +240,10 @@ const getProject = async (params) => {
     }
 };
 
-const getProjectbyId = async (params) => {
+const getProjectbyId = async (param) => {
     try {
-        const allProject = await Project.findOne();
+        const { id } = param
+        const allProject = await Project.findById(id);
         if (!allProject) {
             return {
                 status: httpStatus.NOT_FOUND,
@@ -305,7 +307,7 @@ const updateTask = async (body) => {
 
         const task = await Task.findOneAndUpdate(
             { taskId: taskId },
-            { $set:  updateTask  },
+            { $set: updateTask },
             { new: true }
         );
         console.log("Task Updated", task);
@@ -352,9 +354,10 @@ const getTask = async () => {
     }
 };
 
-const getTaskbyId = async () => {
+const getTaskbyId = async (param) => {
     try {
-        const allTask = await Task.findOne();
+        const { taskId } = param
+        const allTask = await Task.findById(taskId);
         if (!allTask) {
             return {
                 status: httpStatus.NOT_FOUND,

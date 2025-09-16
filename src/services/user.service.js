@@ -74,9 +74,10 @@ const getUsers = async () => {
     }
 };
 
-const getUsersbyId = async () => {
+const getUsersbyId = async (param) => {
     try {
-        const allUsers = await User.findOne();
+        const {id} = param
+        const allUsers = await User.findById(id);
     
         return {
             status: httpStatus.OK,

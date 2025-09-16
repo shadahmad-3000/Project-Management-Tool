@@ -4,13 +4,13 @@ const { Team } = require("../models");
 const createTeam = async (body) => {
     try {
         const { name, teamCode, teamMembers } = body;
-    
+
         const team = await Team.create({
             name,
             teamCode,
             teamMembers
         });
-        console.log("Team Created",team);
+        console.log("Team Created", team);
         if (!team) {
             return {
                 status: httpStatus.NOT_FOUND,
@@ -56,45 +56,46 @@ const updateTeam = async (body) => {
 const getTeam = async () => {
     try {
         const allTeams = await Team.find();
-        if(!allTeams){
-            return{
+        if (!allTeams) {
+            return {
                 status: httpStatus.NOT_FOUND,
-                message:"Teams Not Found"
+                message: "Teams Not Found"
             }
         };
-        return{
+        return {
             status: httpStatus.OK,
-            message:"All Team Fetch Successfully",
+            message: "All Team Fetch Successfully",
             data: allTeams
         }
     } catch (error) {
         console.error(error?.message || error);
-        return{
+        return {
             status: httpStatus.BAD_REQUEST,
-            message:"Failed to fetch teams"
+            message: "Failed to fetch teams"
         }
     }
 };
 
-const getTeambyId = async () => {
+const getTeambyId = async (param) => {
     try {
-        const allTeams = await Team.findOne();
-        if(!allTeams){
-            return{
+        const { id } = param
+        const allTeams = await Team.findById(id);
+        if (!allTeams) {
+            return {
                 status: httpStatus.NOT_FOUND,
-                message:"Team Not Found"
+                message: "Team Not Found"
             }
         };
-        return{
+        return {
             status: httpStatus.OK,
-            message:"Team Fetch Successfully",
+            message: "Team Fetch Successfully",
             data: allTeams
         }
     } catch (error) {
         console.error(error?.message || error);
-        return{
+        return {
             status: httpStatus.BAD_REQUEST,
-            message:"Failed to fetch team"
+            message: "Failed to fetch team"
         }
     }
 };
