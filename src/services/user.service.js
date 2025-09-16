@@ -76,7 +76,7 @@ const getUsers = async () => {
 
 const getUsersbyId = async () => {
     try {
-        const allUsers = await User.find();
+        const allUsers = await User.findOne();
     
         return {
             status: httpStatus.OK,
