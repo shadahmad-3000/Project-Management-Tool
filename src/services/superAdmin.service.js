@@ -305,7 +305,7 @@ const updateTask = async (body) => {
 
         const task = await Task.findOneAndUpdate(
             { taskId: taskId },
-            { $set: { updateTask } },
+            { $set:  updateTask  },
             { new: true }
         );
         console.log("Task Updated", task);
