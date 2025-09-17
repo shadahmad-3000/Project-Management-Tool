@@ -205,8 +205,15 @@ const updateTaskValidation = Joi.object({
       description: Joi.string().optional(),
       assignedBy: Joi.string().optional(),
       assignedTo: Joi.array().items(Joi.string()).optional(),
+      assigneeEmail: Joi.array()
+        .items(Joi.string().email().messages({ "string.email": "Invalid email format" }))
+        .optional(),
       taskStatus: Joi.string().valid("Not Started", "Pending", "In Progress", "Completed", "On Hold").optional(),
       taskduration: Joi.number().optional(),
+        taskDeadline: Joi.object({
+        startDate: Joi.date().optional(),
+        endDate: Joi.date().min(Joi.ref("startDate")).optional(),
+      }).optional(),
       taskPriority: Joi.string().valid("Low", "Medium", "High").optional(),
     }).required().messages({ "object.base": "updateTask must be an object with valid fields" }),
   }),

@@ -4,7 +4,6 @@ const { status: httpStatus } = require("http-status");
 const { User, Project, Task } = require("../models");
 const { required } = require("joi");
 const bcrypt = require("bcryptjs");
-const { param } = require("../app");
 
 const addUsers = async (body) => {
     try {
