@@ -16,7 +16,7 @@ router.post("/assign-role", verifyToken, authorizeRoles(enums.ADMINS), validate(
 router.post("/create-project", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.createProjectValidation), SuperAdminController.projectCreate);
 router.post("/update-project", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.updateProjectValidation), SuperAdminController.projectUpdate);
 router.get("/get-project", verifyToken, authorizeRoles(enums.MANAGEMENT), SuperAdminController.projectGet);
-router.get("/getProjectbyId/:id", verifyToken, authorizeRoles(enums.MANAGEMENT), SuperAdminController.getProjectbyIdController);
+router.get("/getProjectbyId/:projectCode", verifyToken, authorizeRoles(enums.MANAGEMENT), SuperAdminController.getProjectbyIdController);
 
 router.post("/create-task", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.createTaskValidation), SuperAdminController.taskcreate);
 router.post("/update-task", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.updateTaskValidation), SuperAdminController.taskUpdate);
