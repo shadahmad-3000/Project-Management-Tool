@@ -18,6 +18,6 @@ export const userLogout = async (token, email) => {
   );
 };
 
-export const userResetPassword = (payload) => {
-  return API.post("/reset-password", payload);
+export const userChangePassword = (payload) => {
+  return API.post("/change-password", payload);
 };

@@ -33,13 +33,15 @@ const Signin = () => {
       if (res.data?.role) localStorage.setItem("userRole", res.data.role);
       if (res.data?.userId) localStorage.setItem("userId", res.data.userId);
 
-      if (res.data?.token) {
-        antdMessage.success(backendMessage, 3);
-        if (res.data?.isFirstLogin) {
-          navigate("/reset-password", { replace: true });
-        } else {
-          navigate("/home", { replace: true });
-        }
+      antdMessage.success(res.data.message, 3);
+
+      if (res.data.forcePasswordChange) {
+        navigate("/reset-password", {
+          replace: true,
+          state: { oldPassword: credentials.password },
+        });
+      } else {
+        navigate("/home", { replace: true });
       }
     } catch (err) {
       const errorMsg = err.response?.data?.message || "Signin failed.";
@@ -62,7 +64,6 @@ const Signin = () => {
       }
     } finally {
       setLoading(false);
-      //loading check
     }
   };
 

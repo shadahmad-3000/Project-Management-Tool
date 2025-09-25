@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Card, message as antdMessage } from "antd";
 import { EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { userResetPassword } from "../../../utils/UserLogin";
+import { userChangePassword } from "../../../utils/UserLogin";
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -23,7 +23,8 @@ const ResetPassword = () => {
     setLoading(true);
     try {
       const email = localStorage.getItem("userEmail");
-      await userResetPassword({ email, newPassword });
+      const oldPassword = location.state?.oldPassword;
+      await userChangePassword({ email, newPassword, oldPassword });
 
       antdMessage.success("Password updated successfully! Please login again.");
       localStorage.removeItem("token");

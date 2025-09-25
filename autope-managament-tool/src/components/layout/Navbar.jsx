@@ -9,11 +9,7 @@ const Navbar = () => {
         <img src={AutopeLogo} alt="Autope Logo" className="h-10 w-auto" />
         <div className="flex flex-col">
           <span className="text-lg font-semibold leading-tight">
-            <span className="text-gray-700">auto</span>{" "}
-            <span className="text-blue-600">p</span>
-            <span className="text-black">roj</span>
-            <span className="text-blue-600">e</span>
-            <span className="text-black">ct</span>
+            <span className="text-blue-600">Sync</span>
           </span>
           <span className="text-sm text-gray-900">
             The Autope Product Management Tool
