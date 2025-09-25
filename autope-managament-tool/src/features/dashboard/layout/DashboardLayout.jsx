@@ -63,14 +63,18 @@ const DashboardLayout = () => {
 
   return (
     <AntLayout style={{ height: "100vh", overflow: "hidden" }}>
-      {/* Fixed Sidebar */}
       <Sider
         theme="dark"
         width={70}
         collapsed
         collapsedWidth={70}
         trigger={null}
-        style={{ height: "100vh", position: "fixed", left: 0, top: 0 }}
+        style={{
+          height: "calc(100vh - 80px)",
+          position: "fixed",
+          left: 0,
+          top: 80,
+        }}
       >
         <div
           style={{ display: "flex", flexDirection: "column", height: "100%" }}
