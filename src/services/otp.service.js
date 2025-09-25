@@ -1,27 +1,18 @@
-const mailer = require("../utils/mailer");
+const { mailer, sendEmail } = require("../utils/mailer");
 const { status: httpStatus } = require("http-status");
-const { OTP } = require("../models/otp.model")
+const { OTP, User } = require("../models");
 const moment = require("moment");
 const ApiError = require("../utils/apiError");
-const { User } = require("../models/user.model");
 
-//let otpStore = {}
 
 const sentOTP = async (body) => {
     try {
         const { email } = body;
-        if (!email) {
-            return {
-                status: httpStatus.status.BAD_REQUEST,
-                message: "Email is required"
-            }
-        }
         const otp = Math.floor(100000 + Math.random() * 900000);
-        // otpStore[email] = { otp, expires: Date.now() + 5 * 60 * 1000 };
         const expires = Date.now() + 5 * 60 * 1000;
 
         const mailbody = {
-            from: '"AutoPe Payment Solution"youremail@gmail.com',
+            from: '"AutoPe Payment Solutions',
             to: email,
             subject: "Your OTP Code",
             text: `Your OTP is ${otp} and valid for 5 minutes`
@@ -30,13 +21,13 @@ const sentOTP = async (body) => {
         const mail = await mailer.sendMail(mailbody);
         console.log("Mail sent", mail);
         //otp to store in db
-        const dataForDb = {
+        const otpData = {
             email: email,
             otp: otp,
             expires: expires,
             isUsed: false
         }
-        await OTP.create(dataForDb)
+        await OTP.create(otpData);
 
         return {
             status: httpStatus.OK,
@@ -45,17 +36,15 @@ const sentOTP = async (body) => {
     } catch (error) {
         console.error(error?.message || error);
         return {
-            status: httpStatus.BAD_GATEWAY,
+            status: httpStatus.INTERNAL_SERVER_ERROR,
             message: "Failed to sent OTP"
         }
     }
-}
+};
+
 const resendOTP = async (body) => {
     try {
         const { email } = body;
-        if (!email) {
-            throw new ApiError(httpStatus.BAD_REQUEST, "Email is required");
-        }
         const existingOTP = await OTP.findOne({ email }).sort({ _id: -1 });
         if (existingOTP) {
             const now = moment();
@@ -70,10 +59,10 @@ const resendOTP = async (body) => {
             }
         }
         const otp = Math.floor(100000 + Math.random() * 900000);
-        const expires = Date.now() + 5 * 60 * 1000;
+        const expires = Date.now() + 3 * 60 * 1000;
 
         const mailbody = {
-            from: '"AutoPe Payment Solution" <youremail@gmail.com>',
+            from: "AutoPe Payment Solution",
             to: email,
             subject: "Your Resend OTP Code",
             text: `Your OTP is ${otp} and valid for 3 minutes`
@@ -103,12 +92,6 @@ const resendOTP = async (body) => {
 const verifyOTP = async (body) => {
     try {
         const { email, otp } = body;
-        if (!email || !otp) {
-            return {
-                status: httpStatus.BAD_REQUEST,
-                message: "Email or OTP is requried"
-            }
-        }
         const record = await OTP.findOne({ email }).sort({ _id: -1 });
         if (!record) {
             return {
@@ -116,20 +99,27 @@ const verifyOTP = async (body) => {
                 message: "OTP not sent to this mail"
             }
         }
-        if (Date.now() > record.expires) {
+        if (Date.now() > record?.expires) {
             return {
                 status: httpStatus.BAD_REQUEST,
                 message: "OTP is Expired"
             }
         }
-        if (parseInt(otp) == record.otp) {
+        if (parseInt(otp) == record?.otp) {
             record.isUsed = true;
             await record.save();
 
-            await User.updateOne({ email }, { isVerified: true });
+            await User.findOneAndUpdate(
+                { email },
+                {
+                    $set: {
+                        isVerified: true
+                    }
+                }
+            );
             return {
                 status: httpStatus.OK,
-                message: "OTP verified Successfully, Now kindly wait for Super-Admin Approval",
+                message: "OTP verified Successfully, Now kindly wait for Admin Approval"
             }
         } else {
             return {
@@ -144,7 +134,8 @@ const verifyOTP = async (body) => {
             message: "Failed to verify OTP"
         }
     }
-}
+};
+
 module.exports = {
     sentOTP,
     verifyOTP,

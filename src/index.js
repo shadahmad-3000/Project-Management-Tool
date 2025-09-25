@@ -1,9 +1,7 @@
 const app = require("./app");
-const dotenv = require("dotenv");
 const { dbConnect } = require("./utils/dbconnect");
-dotenv.config();
-
-const port = process.env.PORT || 5000;
+const config = require("./utils/config");
+const port = config?.PORT || 5000;
 
 app.listen(port, async () => {
     try {
@@ -12,4 +10,4 @@ app.listen(port, async () => {
     } catch (error) {
         console.error("Error in running Server");
     }
-})
+});

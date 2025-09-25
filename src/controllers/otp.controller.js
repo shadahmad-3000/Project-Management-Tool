@@ -1,58 +1,20 @@
-const otpService = require("../services/otp.service");
-const { status: httpStatus } = require("http-status");
+const { OTPService } = require("../services/index");
+const asyncHandler = require("../utils/async.handler");
 
-const otpsent = async (req, res) => {
-    try {
-        const result = await otpService.sentOTP(req.body);
-        return res.status(httpStatus.OK).json({
-            status: httpStatus.OK,
-            message: "OTP send Successfully",
-            data: result
-        })
-    } catch (error) {
-        console.error(error?.message || error);
-        return res.status(httpStatus.BAD_GATEWAY).json({
-            status: httpStatus.BAD_GATEWAY,
-            message: error?.message || "Internal Server Error"
-        })
-    }
-};
+const otpsent = asyncHandler(async (req, res) => {
+    const result = await OTPService.sentOTP(req.body);
+    res.status(result?.status).json(result);
+});
 
-const otpresend = async (req, res) => {
-    try {
-        const result = await otpService.resendOTP(req.body);
-        if (!result) {
-            return res.status(httpStatus.OK).json({
-                status: httpStatus.OK,
-                message: "OTP Not Resend"
-            })
-        }
-        res.status(httpStatus.OK).json({
-            status: httpStatus.OK,
-            message: "OTP Resend Successfully",
-            data: result
-        })
-    } catch (error) {
-        console.error(error?.message || error);
-        res.status(httpStatus.BAD_GATEWAY).json({
-            status: httpStatus.BAD_GATEWAY,
-            message: "Internal Server Error"
-        })
-    }
-};
+const otpresend = asyncHandler(async (req, res) => {
+    const result = await OTPService.resendOTP(req.body);
+    res.status(result?.status).json(result);
+});
 
-const otpverify = async (req, res) => {
-    try {
-        const result = await otpService.verifyOTP(req.body);
-        res.send(result);
-    } catch (error) {
-        console.error(error?.message || error);
-        return {
-            status: httpStatus.OK,
-            message: "Internal Server Error"
-        }
-    }
-};
+const otpverify = asyncHandler(async (req, res) => {
+    const result = await OTPService.verifyOTP(req.body);
+    res.status(result?.status).send(result?.message);
+});
 
 module.exports = {
     otpsent,

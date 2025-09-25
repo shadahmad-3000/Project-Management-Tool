@@ -1,15 +1,11 @@
-const { User } = require("../models/user.model");
+const { User } = require("../models");
 const { status: httpStatus } = require("http-status");
 const ApiError = require("../utils/apiError");
-
-
 
 const deleteUser = async (param) => {
     try {
         const { empID } = param;
-        if (!empID) {
-            throw new ApiError(httpStatus.BAD_REQUEST, "empID is required");
-        }
+
         const deletedUser = await User.findOneAndDelete({ empID });
         if (!deletedUser) {
             throw new ApiError(httpStatus.NOT_FOUND, `User not found with empId: ${empID}`);
@@ -43,19 +39,19 @@ const updateUser = async (param, body) => {
 
         if (!user) {
             return {
-                status: httpStatus.status.BAD_REQUEST,
+                status: httpStatus.BAD_REQUEST,
                 message: "User Not Found"
             }
         }
         return {
-            status: httpStatus.status.OK,
+            status: httpStatus.OK,
             message: "User's Data Updated Successfully",
             data: user
         }
     } catch (error) {
         console.error(error?.message || error, "Internal Server Error");
         return {
-            status: httpStatus.status.BAD_GATEWAY,
+            status: httpStatus.BAD_GATEWAY,
             message: "Failed to update User Data"
         }
     }
@@ -63,27 +59,42 @@ const updateUser = async (param, body) => {
 const getUsers = async () => {
     try {
         const allUsers = await User.find();
-        if (!allUsers) {
-            return {
-                status: httpStatus.status.BAD_REQUEST,
-                message: "Users Not found",
-            }
-        }
+
         return {
-            status: httpStatus.status.OK,
+            status: httpStatus.OK,
             message: "All Users are here",
             data: allUsers
         }
     } catch (error) {
         console.error(error?.message || error, "Intertnal Server Error");
         return {
-            status: httpStatus.status.BAD_GATEWAY,
+            status: httpStatus.BAD_GATEWAY,
             message: "Error in Fetching Users!!!"
         }
     }
-}
+};
+
+const getUsersbyId = async (param) => {
+    try {
+        const { empID } = param
+        const allUsers = await User.findOne({empID});
+        return {
+            status: httpStatus.OK,
+            message: "User is here",
+            data: allUsers
+        }
+    } catch (error) {
+        console.error(error?.message || error, "Intertnal Server Error");
+        return {
+            status: httpStatus.BAD_GATEWAY,
+            message: "Error in Fetching User!!!"
+        }
+    }
+};
+
 module.exports = {
     deleteUser,
     updateUser,
-    getUsers
+    getUsers,
+    getUsersbyId
 }

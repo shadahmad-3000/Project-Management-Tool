@@ -1,9 +1,15 @@
 const express = require("express");
 const router = express.Router();
-const { userDelete, userUpdate, userGet} = require("../controllers/user.controller");
+const { UserController } = require("../controllers");
+const validate = require("../middlewares/validator");
+const { userValidation } = require("../validations");
+const { verifyToken } = require("../middlewares/auth.middleware");
+const { authorizeRoles } = require("../middlewares/role.middleware");
+const enums = require("../utils/enums");
 
-router.delete("/delete-user/:empID",userDelete);
-router.put("/update-user/:empID",userUpdate);
-router.get("/get-user",userGet);
+router.delete("/delete-user/:empID", verifyToken, authorizeRoles(enums.ADMINS), validate(userValidation.deleteUserValidation), UserController.userDelete);
+router.put("/update-user/:empID", verifyToken, authorizeRoles(enums.ADMINS), validate(userValidation.updateUserValidation), UserController.userUpdate);
+router.get("/get-user", verifyToken, authorizeRoles(enums.MANAGEMENT), validate(userValidation.getUsersValidation), UserController.userGet);
+router.get("/getuserbyId/:empID",verifyToken,authorizeRoles(enums.MANAGEMENT),UserController.getUserbyIdController);
 
 module.exports = router;

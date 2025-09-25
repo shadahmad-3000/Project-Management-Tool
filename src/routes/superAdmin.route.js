@@ -1,11 +1,27 @@
 const express = require("express");
-const { getPendingUsers, approveUser, declineUser, roleAssign } = require("../controllers/superAdmin.controller");
+const { SuperAdminController } = require("../controllers");
+const validate = require("../middlewares/validator");
+const { superAdminValidation } = require("../validations");
 const router = express.Router();
+const { verifyToken } = require("../middlewares/auth.middleware");
+const { authorizeRoles } = require("../middlewares/role.middleware");
+const enums = require("../utils/enums");
 
-router.get("/pending-users",getPendingUsers),
-router.put("/approve-users/:id",approveUser),
-router.delete("/decline-user/:id",declineUser);
-router.post("/assign-role",roleAssign);
+router.post("/add-users", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.addUserValidation), SuperAdminController.usersAdd);
+router.get("/pending-users", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.getPendingUsersValidation), SuperAdminController.getPendingUsers);
+router.put("/approve-users/:id", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.approveUserValidation), SuperAdminController.approveUser);
+router.delete("/decline-user/:id", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.declineUserValidation), SuperAdminController.declineUser);
+router.post("/assign-role", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.assignRoleValidation), SuperAdminController.roleAssign);
+
+router.post("/create-project", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.createProjectValidation), SuperAdminController.projectCreate);
+router.post("/update-project", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.updateProjectValidation), SuperAdminController.projectUpdate);
+router.get("/get-project", verifyToken, authorizeRoles(enums.MANAGEMENT), SuperAdminController.projectGet);
+router.get("/getProjectbyId/:id", verifyToken, authorizeRoles(enums.MANAGEMENT), SuperAdminController.getProjectbyIdController);
+
+router.post("/create-task", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.createTaskValidation), SuperAdminController.taskcreate);
+router.post("/update-task", verifyToken, authorizeRoles(enums.ADMINS), validate(superAdminValidation.updateTaskValidation), SuperAdminController.taskUpdate);
+router.get("/get-task", verifyToken, authorizeRoles(enums.MANAGEMENT), SuperAdminController.taskGet);
+router.get("/gettaskbyId/:taskId", verifyToken, authorizeRoles(enums.MANAGEMENT), SuperAdminController.getTaskbyIdController);
 
 
 module.exports = router;

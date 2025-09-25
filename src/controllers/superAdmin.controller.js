@@ -1,100 +1,86 @@
-const superAdminService = require("../services/superAdmin.service");
-const { status: httpStatus, default: status } = require("http-status");
+const { SuperAdminService } = require("../services");
+const asyncHandler = require("../utils/async.handler");
 
-const getPendingUsers = async (req, res) => {
-    try {
-        const result = await superAdminService.getPendingUsers();
-        return res.status(httpStatus.OK).json({
-            status: httpStatus.OK,
-            message: "Pending users fetched successfully",
-            data: result
-        });
-    } catch (error) {
-        console.error(error?.message || error, "Internal Server Error");
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-            status: httpStatus.INTERNAL_SERVER_ERROR,
-            message: "Server Error"
-        });
-    }
-};
+const usersAdd = asyncHandler(async (req, res) => {
+    const result = await SuperAdminService.addUsers(req.body);
+    res.status(result?.status).json(result);
+});
 
-const approveUser = async (req, res) => {
-    try {
-        console.log("@@@@@@@@@@@@@@@");
-        const { id } = req.params;
-        const result = await superAdminService.approveUser(id);
+const getPendingUsers = asyncHandler(async (req, res) => {
+    const result = await SuperAdminService.getPendingUsers();
+    res.status(result?.status).json(result);
+});
 
-        if (!result) {
-            return res.status(httpStatus.NOT_FOUND).json({
-                status: httpStatus.NOT_FOUND,
-                message: "User not found"
-            });
-        }
+const approveUser = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const result = await SuperAdminService.approveUser(id);
+    res.status(result?.status).json(result);
 
-        return res.status(httpStatus.OK).json({
-            status: httpStatus.OK,
-            message: "User Approved,now User can Log In",
-            data: result
-        });
-    } catch (error) {
-        console.error(error?.message || error, "Internal Server Error");
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-            status: httpStatus.INTERNAL_SERVER_ERROR,
-            message: "Server Error"
-        });
-    }
-};
+});
 
-const declineUser = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const result = await superAdminService.declineUser(id);
+const declineUser = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const result = await SuperAdminService.declineUser(id);
+    res.status(result?.status).json(result);
+});
 
-        if (!result) {
-            return res.status(httpStatus.NOT_FOUND).json({
-                status: httpStatus.NOT_FOUND,
-                message: "User not found"
-            });
-        }
-        return res.status(httpStatus.OK).json({
-            status: httpStatus.OK,
-            message: "User Declined and Removed"
-        });
-    } catch (error) {
-        console.error(error?.message || error, "Internal Server Error");
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-            status: httpStatus.INTERNAL_SERVER_ERROR,
-            message: "Server Error"
-        });
-    }
-};
+const roleAssign = asyncHandler(async (req, res) => {
+    const result = await SuperAdminService.assignRole(req.body);
+    res.status(result?.status).json(result);
+});
 
-const roleAssign = async (req, res) => {
-    try {
-        const result = await superAdminService.assignRole(req.body);
-        if (!result) {
-            return res.status(httpStatus.BAD_REQUEST).json({
-                status: httpStatus.BAD_REQUEST,
-                message: "Role Not Assigned"
-            });
-        }
-        //res.send(result);
-        res.status(httpStatus.OK).json({
-            status: httpStatus.OK,
-            message:"Role Assigned Successfully",
-            data: result
-        })
-    } catch (error) {
-        console.error(error?.message || error);
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-            status:httpStatus.INTERNAL_SERVER_ERROR,
-            message:"Server Error"
-        })
-    }
-}
+const projectCreate = asyncHandler(async (req, res) => {
+    const result = await SuperAdminService.createProject(req.body);
+    res.status(result?.status).json(result);
+});
+
+const projectUpdate = asyncHandler(async (req, res) => {
+    const result = await SuperAdminService.updateProject(req.body);
+    res.status(result?.status).json(result);
+});
+
+const projectGet = asyncHandler(async (req, res) => {
+    const result = await SuperAdminService.getProject();
+    res.status(result?.status).json(result);
+});
+
+const getProjectbyIdController = asyncHandler(async (req, res) => {
+    const result = await SuperAdminService.getProjectbyId(req.params);
+    res.status(result?.status).json(result);
+});
+
+const taskcreate = asyncHandler(async (req, res) => {
+    const result = await SuperAdminService.createTask(req.body);
+    res.status(result?.status).json(result);
+});
+
+const taskUpdate = asyncHandler(async (req, res) => {
+    const result = await SuperAdminService.updateTask(req.body);
+    res.status(result?.status).json(result)
+});
+
+const taskGet = asyncHandler(async (req, res) => {
+    const result = await SuperAdminService.getTask();
+    res.status(result?.status).json(result);
+});
+
+const getTaskbyIdController = asyncHandler(async (req, res) => {
+    const result = await SuperAdminService.getTaskbyId(req.params);
+    res.status(result?.status).json(result);
+});
+
 module.exports = {
+    usersAdd,
     getPendingUsers,
     approveUser,
     declineUser,
-    roleAssign
+    roleAssign,
+    projectCreate,
+    projectUpdate,
+    projectGet,
+    getProjectbyIdController,
+    taskcreate,
+    taskUpdate,
+    taskGet,
+    getTaskbyIdController
 };
