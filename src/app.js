@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const otpRouter = require("./routes/otp.router");
+const otpRouter = require("./routes/otp.route");
 const authRouter = require("./routes/auth.route");
 const userRouter = require("./routes/user.route");
 const superAdminRouter = require("./routes/superAdmin.route");

@@ -2,8 +2,6 @@ const { mailer, sendEmail } = require("../utils/mailer");
 const { status: httpStatus } = require("http-status");
 const { OTP, User } = require("../models");
 const moment = require("moment");
-const ApiError = require("../utils/apiError");
-
 
 const sentOTP = async (body) => {
     try {
@@ -15,7 +13,7 @@ const sentOTP = async (body) => {
             from: '"AutoPe Payment Solutions',
             to: email,
             subject: "Your OTP Code",
-            text: `Your OTP is ${otp} and valid for 5 minutes`
+            text: `Your OTP is ${otp} and valid for 5 minutes.`
         }
 
         const mail = await mailer.sendMail(mailbody);
@@ -64,7 +62,7 @@ const resendOTP = async (body) => {
         const mailbody = {
             from: "AutoPe Payment Solution",
             to: email,
-            subject: "Your Resend OTP Code",
+            subject: "Your OTP Code",
             text: `Your OTP is ${otp} and valid for 3 minutes`
         };
         const resendMail = await mailer.sendMail(mailbody);
@@ -119,12 +117,12 @@ const verifyOTP = async (body) => {
             );
             return {
                 status: httpStatus.OK,
-                message: "OTP verified Successfully, Now kindly wait for Admin Approval"
+                message: "OTP verified Successfully, Now set your new Password"
             }
         } else {
             return {
                 status: httpStatus.UNAUTHORIZED,
-                message: "Invalid OTP"
+                message: "Unauthorized"
             }
         }
     } catch (error) {
