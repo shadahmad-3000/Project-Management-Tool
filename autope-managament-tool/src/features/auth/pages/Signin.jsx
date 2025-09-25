@@ -35,7 +35,11 @@ const Signin = () => {
 
       if (res.data?.token) {
         antdMessage.success(backendMessage, 3);
-        navigate("/home", { replace: true });
+        if (res.data?.isFirstLogin) {
+          navigate("/reset-password", { replace: true });
+        } else {
+          navigate("/home", { replace: true });
+        }
       }
     } catch (err) {
       const errorMsg = err.response?.data?.message || "Signin failed.";
@@ -63,28 +67,6 @@ const Signin = () => {
 
   return (
     <div className="relative min-h-screen w-screen bg-gradient-to-br from-purple-50 via-white to-blue-100">
-      <header className="absolute top-0 left-0 w-full flex justify-between items-center px-8 py-4 z-10">
-        <div className="flex items-center space-x-3">
-          <img src={AutopeLogo} alt="Autope Logo" className="h-10 w-auto" />
-          <div className="flex flex-col">
-            <span className="text-lg font-semibold leading-tight">
-              <span className="text-gray-700">auto</span>{" "}
-              <span className="text-blue-600">p</span>
-              <span className="text-black">roj</span>
-              <span className="text-blue-600">e</span>
-              <span className="text-black">ct</span>
-            </span>
-            <span className="text-sm text-gray-900">
-              The Autope Product Management Tool
-            </span>
-          </div>
-        </div>
-
-        <Button color="green" variant="outlined">
-          Contact Us
-        </Button>
-      </header>
-
       <div
         className="absolute inset-0 bg-cover bg-center opacity-30"
         style={{

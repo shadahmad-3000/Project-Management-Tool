@@ -15,7 +15,6 @@ const Home = () => {
 
   return (
     <Layout style={{ height: "100vh", overflow: "hidden" }}>
-      {/* Fixed Sidebar */}
       <Sider
         width={200}
         theme="dark"
@@ -41,14 +40,13 @@ const Home = () => {
         </Menu>
       </Sider>
 
-      {/* Content shifted right */}
       <Layout style={{ marginLeft: 200, height: "100vh" }}>
         <Content
           style={{
             padding: "20px",
             background: "#000",
             height: "100%",
-            overflowY: "auto", // 👈 only this scrolls
+            overflowY: "auto",
           }}
         >
           <Outlet />
