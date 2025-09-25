@@ -69,12 +69,11 @@ const AddEditUser = () => {
   };
 
   if (initialLoading) {
-    return <Spin size="large" className="flex justify-center mt-10" />;
+    return <Spin size="large" />;
   }
 
   return (
     <Card
-      className="shadow-xl p-6"
       style={{
         backgroundColor: "#141414",
         color: "#f5f5f5",
@@ -85,13 +84,10 @@ const AddEditUser = () => {
         type="text"
         icon={<ArrowLeftOutlined />}
         onClick={() => navigate(-1)}
-        className="absolute top-4 left-4 text-gray-300 hover:text-white"
       >
         Back
       </Button>
-      <h2 className="text-2xl font-bold text-center mb-6 text-gray-100">
-        {isEditMode ? "Edit User" : "Add New User"}
-      </h2>
+      <h2>{isEditMode ? "Edit User" : "Add New User"}</h2>
 
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
         <Form.Item
@@ -143,12 +139,7 @@ const AddEditUser = () => {
           <Input placeholder="Enter department" />
         </Form.Item>
 
-        <Button
-          type="primary"
-          htmlType="submit"
-          loading={loading}
-          className="w-full"
-        >
+        <Button type="primary" htmlType="submit" loading={loading} block>
           {isEditMode ? "Update User" : "Create User"}
         </Button>
       </Form>

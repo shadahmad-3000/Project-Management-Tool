@@ -107,7 +107,6 @@ const TasksPage = () => {
 
   return (
     <Card
-      className="shadow-xl"
       style={{
         backgroundColor: "#fff",
         color: "#1f2937",
@@ -123,7 +122,7 @@ const TasksPage = () => {
           marginBottom: 16,
         }}
       >
-        <h2 className="text-xl font-bold">Tasks</h2>
+        <h2>Tasks</h2>
         <Space>
           <Search
             placeholder="Search tasks"

@@ -120,8 +120,8 @@ const ProjectsPage = () => {
         minHeight: "90vh",
       }}
     >
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-gray-100">Projects</h2>
+      <div>
+        <h2>Projects</h2>
 
         <Space>
           <Search

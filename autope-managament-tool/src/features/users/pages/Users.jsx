@@ -191,14 +191,13 @@ const UsersPage = () => {
 
   return (
     <Card
-      className="shadow-xl"
       style={{
         backgroundColor: "#fff",
         borderRadius: "10px",
       }}
     >
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-gray-800">Users</h2>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
+        <h2>Users</h2>
         <Space>
           <Search
             placeholder="Search Users..."

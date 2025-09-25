@@ -43,9 +43,8 @@ const VerifyOtp = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen w-screen bg-[#1f1f1f] px-4 py-8">
+    <div>
       <Card
-        className="shadow-xl p-6"
         style={{
           width: "400px",
           backgroundColor: "#1f1f1f",
@@ -53,9 +52,9 @@ const VerifyOtp = () => {
           borderRadius: "10px",
         }}
       >
-        <h2 className="text-2xl font-bold text-center mb-6">Verify OTP</h2>
+        <h2>Verify OTP</h2>
 
-        <p className="text-gray-300 mb-4">
+        <p>
           We sent an OTP to <b>{email}</b>. Enter it below to verify your
           account.
         </p>
@@ -71,16 +70,11 @@ const VerifyOtp = () => {
           }}
         />
 
-        <Button type="primary" block className="mt-4" onClick={handleVerifyOtp}>
+        <Button type="primary" block onClick={handleVerifyOtp}>
           Verify OTP
         </Button>
 
-        <Button
-          block
-          disabled={timer > 0}
-          className="mt-2"
-          onClick={handleResendOtp}
-        >
+        <Button block disabled={timer > 0} onClick={handleResendOtp}>
           {timer > 0
             ? `Resend in ${Math.floor(timer / 60)}:${String(
                 timer % 60
