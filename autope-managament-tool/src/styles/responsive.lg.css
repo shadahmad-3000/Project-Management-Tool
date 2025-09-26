@@ -1,0 +1,13 @@
+@media only screen and (max-width: 1200px) {
+  .hide-in-desktop-only {
+    display: flex !important;
+  }
+
+  .desktop-nav-items {
+    display: none !important;
+  }
+
+  .nav-buttons > img:first-child {
+    display: none;
+  }
+}
