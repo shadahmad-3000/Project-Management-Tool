@@ -1,4 +1,5 @@
 import React from "react";
+import Button from "react-bootstrap/Button";
 
 const CButton = ({
   children,
@@ -13,7 +14,7 @@ const CButton = ({
   const baseClass = `btn btn-${variant} primary-button ${className}`;
 
   return (
-    <button
+    <Button
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
@@ -29,7 +30,7 @@ const CButton = ({
       {...rest}
     >
       {loading ? "Loading..." : children}
-    </button>
+    </Button>
   );
 };
 
