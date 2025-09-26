@@ -1,21 +1,21 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import Signin from "../features/auth/pages/Signin";
-import DashboardLayout from "../features/dashboard/layout/DashboardLayout";
-import Home from "../features/dashboard/pages/Home";
-import Dashboard from "../features/dashboard/pages/Dashboard";
+import Signin from "../pages/auth/pages/Signin";
+import DashboardLayout from "../pages/dashboard/layout/DashboardLayout";
+import Home from "../pages/dashboard/pages/Home";
+import Dashboard from "../pages/dashboard/pages/Dashboard";
 import ApproveUsers from "../superAdmin/ApproveUsers";
-import VerifyOtp from "../features/auth/pages/VerifyOtp";
-import AddEditTeam from "../features/teams/pages/AddEditTeam";
-import ProjectsPage from "../features/projects/pages/Projects";
-import TasksPage from "../features/tasks/pages/Tasks";
-import TeamsPage from "../features/teams/pages/Teams";
-import UsersPage from "../features/users/pages/Users";
-import AddEditUser from "../features/users/pages/AddEditUser";
-import AddEditProject from "../features/projects/pages/AddEditProject";
-import AddEditTask from "../features/tasks/pages/AddEditTask";
-import ResetPassword from "../features/auth/pages/ResetPassword";
+import VerifyOtp from "../pages/auth/pages/VerifyOtp";
+import AddEditTeam from "../pages/teams/pages/AddEditTeam";
+import ProjectsPage from "../pages/projects/pages/Projects";
+import TasksPage from "../pages/tasks/pages/Tasks";
+import TeamsPage from "../pages/teams/pages/Teams";
+import UsersPage from "../pages/users/pages/Users";
+import AddEditUser from "../pages/users/pages/AddEditUser";
+import AddEditProject from "../pages/projects/pages/AddEditProject";
+import AddEditTask from "../pages/tasks/pages/AddEditTask";
+import ResetPassword from "../pages/auth/pages/ResetPassword";
 import Navbar from "../components/layout/Navbar";
 
 const AppRoutes = () => {

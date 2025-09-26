@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "antd";
-import AutopeLogo from "../../assets/Autope_Logo.jpeg";
+import AutopeLogo from "../../resources/assets/Autope_Logo.jpeg";
 
 const Navbar = () => {
   return (
