@@ -39,7 +39,7 @@ const addUsers = async (body) => {
       text: `Hello ${name}, your temporary password is ${autoPassword}`,
     };
 
-    const mail = await mailer.sendMail(mailbody);
+    const mail = mailer.sendMail(mailbody);
     if (!mail) {
       return {
         status: httpStatus.NOT_FOUND,

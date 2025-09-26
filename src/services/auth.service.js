@@ -190,7 +190,7 @@ const forgetPassword = async (body) => {
         message: "User not found with this email",
       };
     }
-    await OTPService.sentOTP({ email });
+    OTPService.sentOTP({ email });
     return {
       status: httpStatus.OK,
       message: `OTP send to ${email}`,
@@ -219,9 +219,7 @@ const resetPassword = async (body) => {
         status: httpStatus.NOT_FOUND,
         message: "User Not Found",
       };
-    }
-    await OTPService.verifyOTP();
-    
+    }    
     if (!user.isVerified) {
       return {
         status: httpStatus.UNAUTHORIZED,
