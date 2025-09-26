@@ -118,7 +118,7 @@ const verifyOTP = async (body) => {
       );
       return {
         status: httpStatus.OK,
-        message: "OTP verified Successfully, Now set your new Password",
+        message: "OTP verified Successfully, Now Reset your Password",
       };
     } else {
       return {
