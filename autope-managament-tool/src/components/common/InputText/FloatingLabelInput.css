@@ -1,0 +1,166 @@
+.fli-wrapper {
+  cursor: text;
+  width: 100%;
+}
+
+/* top label above control */
+.fli-top-label {
+  font-family: "Poppins-Bold";
+  color: var(--text-color);
+  margin: 0 0 10px 0;
+  font-size: 16px;
+}
+
+/* input container */
+.fli-container {
+  border: 1px solid var(--input-border);
+  border-radius: var(--border-radius);
+  height: var(--input-height);
+  background-color: var(--shadow-color);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+/* states */
+.fli-container.fli-error {
+  border-color: var(--red);
+}
+
+.fli-container.fli-active {
+  border-color: var(--blue4);
+}
+
+.fli-container.fli-valid {
+  border-color: var(--green);
+}
+
+.fli-container.fli-disabled {
+  background-color: var(--disabled-bg);
+  cursor: not-allowed;
+}
+
+/* label (floating) */
+.fli-label {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  font-family: "Poppins-Regular";
+  color: var(--text-color);
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+  transition: all 0.18s ease-in-out;
+  border-radius: 4px;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* when label is active (focused or has value) */
+.fli-label.fli-label--active {
+  top: 6px;
+  transform: translateY(0);
+  font-size: 14px;
+  padding: 0 6px;
+  background-color: var(--label-bg);
+}
+
+/* input */
+.fli-input {
+  height: 100%;
+  width: 100%;
+  font-family: "Poppins-Medium";
+  font-size: 18px;
+  color: var(--text-color);
+  background-color: transparent;
+  border: none;
+  outline: none;
+  padding: 0 12px;
+  box-sizing: border-box;
+  text-align: left;
+  z-index: 0;
+}
+
+/* right button (change button) */
+.fli-right-button {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 8px;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  z-index: 2;
+  font-family: "Poppins-Medium";
+  font-size: 14px;
+  color: var(--blue4);
+}
+
+.fli-left-text {
+  font-size: 17px;
+  font-family: "Poppins-SemiBold";
+  color: var(--text-color);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 5px 10px;
+  margin-right: 10px;
+  display: inline-block;
+}
+
+/* left wrapper places left content */
+.fli-left-wrapper {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  pointer-events: none; /* keep same behavior as before */
+}
+
+/* error text below input */
+.fli-error-text {
+  margin-top: 5px;
+  font-family: "Poppins-Regular";
+  font-size: 14px;
+  color: var(--red);
+  margin: 0;
+  text-align: left;
+}
+
+/* readonly state cursor */
+.fli-readonly {
+  cursor: pointer;
+}
+
+/* small utilities */
+.fli-button-text {
+  font-family: "Poppins-Medium";
+  font-size: 14px;
+  color: var(--blue4);
+}
+
+/* ensure input doesn't overlap left wrapper */
+.fli-container .fli-input {
+  padding-left: 12px;
+}
+
+/* when left wrapper is present, push input right (so it doesn't overlap) */
+.fli-left-wrapper + .fli-input,
+.fli-left-wrapper ~ .fli-input {
+  padding-left: 120px; /* adjust if your left view is wider */
+}
+
+/* when right button present, keep space for it (if you want to handle via JS, pass inputStyle) */
+.fli-container .fli-right-button + .fli-input,
+.fli-container .fli-input + .fli-right-button {
+  padding-right: 48px;
+}
