@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   Form,
   Input,
-  Button,
   Select,
   Card,
   DatePicker,
@@ -15,6 +14,7 @@ import dayjs from "dayjs";
 import { getUsers } from "../../../utils/User";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
+import CButton from "../../../components/common/CButton";
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -144,13 +144,18 @@ const AddEditTask = () => {
         borderRadius: "10px",
       }}
     >
-      <Button
-        type="text"
-        icon={<ArrowLeftOutlined />}
+      <CButton
         onClick={() => navigate(-1)}
+        style={{
+          background: "transparent",
+          border: "none",
+          color: "var(--text-color)",
+        }}
       >
+        <ArrowLeftOutlined style={{ marginRight: 6 }} />
         Back
-      </Button>
+      </CButton>
+
       <h2>{isEditMode ? "Edit Task" : "Create Task"}</h2>
 
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
@@ -203,7 +208,11 @@ const AddEditTask = () => {
             { required: true, message: "At least one assignee is required" },
           ]}
         >
-          <Select mode="multiple" placeholder="Select assignees" optionLabelProp="label">
+          <Select
+            mode="multiple"
+            placeholder="Select assignees"
+            optionLabelProp="label"
+          >
             {users.map((user) => (
               <Option
                 key={user.email}
@@ -258,9 +267,9 @@ const AddEditTask = () => {
           </Select>
         </Form.Item>
 
-        <Button type="primary" htmlType="submit" loading={loading} block>
+        <CButton type="submit" loading={loading} style={{ width: "100%" }}>
           {isEditMode ? "Update Task" : "Create Task"}
-        </Button>
+        </CButton>
       </Form>
     </Card>
   );

@@ -27,7 +27,6 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      {/* Recent Tasks */}
       <Card
         title={<span>Recent Tasks</span>}
         extra={<Button type="primary">+ New Task</Button>}

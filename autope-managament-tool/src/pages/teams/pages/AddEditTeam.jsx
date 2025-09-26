@@ -12,6 +12,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { getUsers } from "../../../utils/User";
 import { createTeam, updateTeam, getTeamById } from "../../../utils/team";
+import CButton from "../../../components/common/CButton";
 
 const { Option } = Select;
 
@@ -98,13 +99,17 @@ const AddEditTeam = () => {
         borderRadius: "10px",
       }}
     >
-      <Button
-        type="text"
-        icon={<ArrowLeftOutlined />}
+      <CButton
         onClick={() => navigate(-1)}
+        style={{
+          background: "transparent",
+          border: "none",
+          color: "var(--text-color)",
+        }}
       >
+        <ArrowLeftOutlined style={{ marginRight: 6 }} />
         Back
-      </Button>
+      </CButton>
 
       <h2>{isEditMode ? "Edit Team" : "Create Team"}</h2>
 
@@ -130,7 +135,11 @@ const AddEditTeam = () => {
           name="teamMembers"
           rules={[{ required: true, message: "Select at least one member" }]}
         >
-          <Select mode="multiple" placeholder="Select team members" optionLabelProp="label">
+          <Select
+            mode="multiple"
+            placeholder="Select team members"
+            optionLabelProp="label"
+          >
             {users.map((user) => (
               <Option
                 key={user._id}
@@ -143,9 +152,9 @@ const AddEditTeam = () => {
           </Select>
         </Form.Item>
 
-        <Button type="primary" htmlType="submit" loading={loading} block>
+        <CButton type="submit" loading={loading} style={{ width: "100%" }}>
           {isEditMode ? "Update Team" : "Create Team"}
-        </Button>
+        </CButton>
       </Form>
     </Card>
   );

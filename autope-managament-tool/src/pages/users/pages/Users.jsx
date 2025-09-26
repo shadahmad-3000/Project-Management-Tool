@@ -13,6 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { deleteUser, getUsers } from "../../../utils/User";
 import { DeleteOutlined, PlusOutlined, EditOutlined } from "@ant-design/icons";
+import CButton from "../../../components/common/CButton";
 
 const { Search } = Input;
 
@@ -153,11 +154,13 @@ const UsersPage = () => {
         return (
           <Space>
             <Tooltip title="Edit User">
-              <Button
-                type="text"
-                icon={<EditOutlined style={{ color: "blue" }} />}
+              <CButton
                 onClick={() => navigate(`/home/users/edit/${record.empID}`)}
-              />
+                className="p-0"
+                style={{ background: "transparent", border: "none" }}
+              >
+                <EditOutlined style={{ color: "blue" }} />
+              </CButton>
             </Tooltip>
             <Tooltip
               title={isSuperAdmin ? "Cannot delete Super-Admin" : "Delete User"}
@@ -170,15 +173,18 @@ const UsersPage = () => {
                   cancelText="No"
                   disabled={isSuperAdmin}
                 >
-                  <Button
-                    type="text"
-                    icon={
-                      <DeleteOutlined
-                        style={{ color: isSuperAdmin ? "gray" : "red" }}
-                      />
-                    }
+                  <CButton
                     disabled={isSuperAdmin}
-                  />
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      padding: 0,
+                    }}
+                  >
+                    <DeleteOutlined
+                      style={{ color: isSuperAdmin ? "gray" : "red" }}
+                    />
+                  </CButton>
                 </Popconfirm>
               </span>
             </Tooltip>
@@ -196,7 +202,13 @@ const UsersPage = () => {
         borderRadius: "10px",
       }}
     >
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: 16,
+        }}
+      >
         <h2>Users</h2>
         <Space>
           <Search
@@ -206,13 +218,10 @@ const UsersPage = () => {
             style={{ width: 250 }}
           />
           {(userRole === "Super-Admin" || userRole === "Admin") && (
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => navigate("/home/users/add")}
-            >
+            <CButton onClick={() => navigate("/home/users/add")}>
+              <PlusOutlined style={{ marginRight: 8 }} />
               New User
-            </Button>
+            </CButton>
           )}
         </Space>
       </div>

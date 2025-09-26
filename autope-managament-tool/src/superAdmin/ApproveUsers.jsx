@@ -15,6 +15,7 @@ import {
   approveUserById,
   assignRoleToUser,
 } from "../utils/superAdmin";
+import CButton from "../components/common/CButton";
 
 const { Option } = Select;
 
@@ -136,7 +137,7 @@ const ApproveUsers = () => {
               okText="Yes"
               cancelText="Cancel"
             >
-              <Button type="primary">Approve</Button>
+              <CButton>Approve</CButton>
             </Popconfirm>
 
             <Popconfirm
@@ -145,9 +146,15 @@ const ApproveUsers = () => {
               okText="Yes, Decline"
               cancelText="Cancel"
             >
-              <Button danger type="text">
+              <CButton
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "red",
+                }}
+              >
                 Decline
-              </Button>
+              </CButton>
             </Popconfirm>
 
             <Select
@@ -163,17 +170,17 @@ const ApproveUsers = () => {
               <Option value="HR">HR</Option>
             </Select>
 
-            <Button
+            <CButton
+              onClick={() => handleAssignRole(record.email, id)}
+              disabled={!roleSelections[id] && roleSelections[id] !== "User"}
               style={{
                 backgroundColor: "green",
                 borderColor: "green",
                 color: "white",
               }}
-              onClick={() => handleAssignRole(record.email, id)}
-              disabled={!roleSelections[id] && roleSelections[id] !== "User"}
             >
               Assign
-            </Button>
+            </CButton>
           </Space>
         );
       },

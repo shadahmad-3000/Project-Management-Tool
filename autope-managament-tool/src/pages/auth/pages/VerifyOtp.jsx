@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Input, Button, Card, message as antdMessage } from "antd";
+import { Input, Card, message as antdMessage } from "antd";
 import { userResendOtp, userVerifyOtp } from "../../../utils/OtpVerification";
+import CButton from "../../../components/common/CButton";
 
 const VerifyOtp = () => {
   const location = useLocation();
@@ -70,17 +71,21 @@ const VerifyOtp = () => {
           }}
         />
 
-        <Button type="primary" block onClick={handleVerifyOtp}>
+        <CButton onClick={handleVerifyOtp} style={{ width: "100%" }}>
           Verify OTP
-        </Button>
+        </CButton>
 
-        <Button block disabled={timer > 0} onClick={handleResendOtp}>
+        <CButton
+          onClick={handleResendOtp}
+          disabled={timer > 0}
+          style={{ width: "100%" }}
+        >
           {timer > 0
             ? `Resend in ${Math.floor(timer / 60)}:${String(
                 timer % 60
               ).padStart(2, "0")}`
             : "Resend OTP"}
-        </Button>
+        </CButton>
       </Card>
     </div>
   );

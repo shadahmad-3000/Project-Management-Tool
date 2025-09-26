@@ -18,6 +18,7 @@ import dayjs from "dayjs";
 import { getTeams } from "../../../utils/team";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
+import CButton from "../../../components/common/CButton";
 
 const { Option } = Select;
 
@@ -136,13 +137,18 @@ const AddEditProject = () => {
         borderRadius: "10px",
       }}
     >
-      <Button
-        type="text"
-        icon={<ArrowLeftOutlined />}
+      <CButton
         onClick={() => navigate(-1)}
+        style={{
+          background: "transparent",
+          border: "none",
+          color: "var(--text-color)",
+        }}
       >
+        <ArrowLeftOutlined style={{ marginRight: 6 }} />
         Back
-      </Button>
+      </CButton>
+
       <h2>{isEditMode ? "Edit Project" : "Create Project"}</h2>
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
         <Form.Item
@@ -218,9 +224,9 @@ const AddEditProject = () => {
           </Select>
         </Form.Item>
 
-        <Button type="primary" htmlType="submit" loading={loading}>
+        <CButton type="submit" loading={loading} style={{ width: "100%" }}>
           {isEditMode ? "Update Project" : "Create Project"}
-        </Button>
+        </CButton>
       </Form>
     </Card>
   );

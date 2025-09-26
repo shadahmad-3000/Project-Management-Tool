@@ -4,6 +4,7 @@ import { EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { getTask } from "../../../utils/superAdmin";
 import dayjs from "dayjs";
+import CButton from "../../../components/common/CButton";
 
 const { Search } = Input;
 
@@ -94,11 +95,13 @@ const TasksPage = () => {
       render: (_, record) => (
         <Space>
           <Tooltip title="Edit Task">
-            <Button
-              type="text"
-              icon={<EditOutlined style={{ color: "blue" }} />}
+            <CButton
               onClick={() => navigate(`/home/tasks/edit/${record.taskId}`)}
-            />
+              className="p-0"
+              style={{ background: "transparent", border: "none" }}
+            >
+              <EditOutlined style={{ color: "blue" }} />
+            </CButton>
           </Tooltip>
         </Space>
       ),
@@ -131,13 +134,10 @@ const TasksPage = () => {
             style={{ width: 250 }}
           />
           {(userRole === "Super-Admin" || userRole === "Admin") && (
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => navigate("/home/tasks/add")}
-            >
+            <CButton onClick={() => navigate("/home/tasks/add")}>
+              <PlusOutlined style={{ marginRight: 8 }} />
               New Task
-            </Button>
+            </CButton>
           )}
         </Space>
       </div>

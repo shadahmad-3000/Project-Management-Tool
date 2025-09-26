@@ -1,6 +1,6 @@
 import React from "react";
-import { Button } from "antd";
 import AutopeLogo from "../../resources/assets/Autope_Logo.jpeg";
+import CButton from "../common/CButton";
 
 const Navbar = () => {
   return (
@@ -16,9 +16,17 @@ const Navbar = () => {
           </span>
         </div>
       </div>
-      <Button color="green" variant="outlined">
+      <CButton
+        variant="secondary"
+        className="text-blue"
+        style={{
+          backgroundColor: "transparent",
+          border: "2px solid var(--blue)",
+          color: "var(--blue)",
+        }}
+      >
         Contact Us
-      </Button>
+      </CButton>
     </header>
   );
 };

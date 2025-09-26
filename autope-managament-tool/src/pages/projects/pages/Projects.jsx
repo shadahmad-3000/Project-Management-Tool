@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Card, Table, Input, Button, Space, message, Tooltip } from "antd";
+import { Card, Table, Input, Space, message, Tooltip } from "antd";
 import { EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { getProject } from "../../../utils/superAdmin";
 import { useNavigate } from "react-router-dom";
+import CButton from "../../../components/common/CButton";
 
 const { Search } = Input;
 
@@ -98,13 +99,15 @@ const ProjectsPage = () => {
       render: (_, record) => (
         <Space>
           <Tooltip title="Edit Project">
-            <Button
-              type="text"
-              icon={<EditOutlined style={{ color: "blue" }} />}
+            <CButton
               onClick={() =>
                 navigate(`/home/projects/edit/${record.projectCode}`)
               }
-            />
+              className="p-0"
+              style={{ background: "transparent", border: "none" }}
+            >
+              <EditOutlined style={{ color: "blue" }} />
+            </CButton>
           </Tooltip>
         </Space>
       ),
@@ -131,13 +134,10 @@ const ProjectsPage = () => {
             style={{ width: 250 }}
           />
           {(userRole === "Super-Admin" || userRole === "Admin") && (
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => navigate("/home/projects/add")}
-            >
+            <CButton onClick={() => navigate("/home/projects/add")}>
+              <PlusOutlined style={{ marginRight: 8 }} />
               New Project
-            </Button>
+            </CButton>
           )}
         </Space>
       </div>

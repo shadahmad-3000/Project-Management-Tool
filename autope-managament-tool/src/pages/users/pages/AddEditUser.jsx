@@ -4,6 +4,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { getUserById, updateUser } from "../../../utils/User";
 import { addUsers } from "../../../utils/superAdmin";
+import CButton from "../../../components/common/CButton";
 
 const AddEditUser = () => {
   const [form] = Form.useForm();
@@ -80,13 +81,17 @@ const AddEditUser = () => {
         borderRadius: "10px",
       }}
     >
-      <Button
-        type="text"
-        icon={<ArrowLeftOutlined />}
+      <CButton
         onClick={() => navigate(-1)}
+        style={{
+          background: "transparent",
+          border: "none",
+          color: "var(--text-color)",
+        }}
       >
+        <ArrowLeftOutlined style={{ marginRight: 6 }} />
         Back
-      </Button>
+      </CButton>
       <h2>{isEditMode ? "Edit User" : "Add New User"}</h2>
 
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
@@ -139,9 +144,9 @@ const AddEditUser = () => {
           <Input placeholder="Enter department" />
         </Form.Item>
 
-        <Button type="primary" htmlType="submit" loading={loading} block>
+        <CButton type="submit" loading={loading} style={{ width: "100%" }}>
           {isEditMode ? "Update User" : "Create User"}
-        </Button>
+        </CButton>
       </Form>
     </Card>
   );

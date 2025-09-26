@@ -3,6 +3,7 @@ import { Table, Input, Button, Space, Card, message, Tooltip } from "antd";
 import { EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { getTeams } from "../../../utils/team";
 import { useNavigate } from "react-router-dom";
+import CButton from "../../../components/common/CButton";
 
 const { Search } = Input;
 
@@ -85,11 +86,13 @@ const TeamsPage = () => {
       render: (_, record) => (
         <Space>
           <Tooltip title="Edit Team">
-            <Button
-              type="text"
-              icon={<EditOutlined style={{ color: "blue" }} />}
+            <CButton
               onClick={() => navigate(`/home/teams/edit/${record.teamCode}`)}
-            />
+              className="p-0"
+              style={{ background: "transparent", border: "none" }}
+            >
+              <EditOutlined style={{ color: "blue" }} />
+            </CButton>
           </Tooltip>
         </Space>
       ),
@@ -103,7 +106,13 @@ const TeamsPage = () => {
         borderRadius: "10px",
       }}
     >
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: 16,
+        }}
+      >
         <h2>Teams</h2>
         <Space>
           <Search
@@ -113,13 +122,10 @@ const TeamsPage = () => {
             style={{ width: 250 }}
           />
           {(userRole === "Super-Admin" || userRole === "Admin") && (
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => navigate("/home/teams/add")}
-            >
+            <CButton onClick={() => navigate("/home/teams/add")}>
+              <PlusOutlined style={{ marginRight: 8 }} />
               New Team
-            </Button>
+            </CButton>
           )}
         </Space>
       </div>

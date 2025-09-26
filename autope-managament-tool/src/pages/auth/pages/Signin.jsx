@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { userSignin } from "../../../utils/UserLogin";
 import { userSendOtp } from "../../../utils/OtpVerification";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Card, Spin, message as antdMessage } from "antd";
+import { Card, Spin, message as antdMessage } from "antd";
 import { EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
+import CButton from "../../../components/common/CButton";
 
 const Signin = () => {
   const [credentials, setCredentials] = useState({
@@ -117,9 +118,9 @@ const Signin = () => {
               <Link to="/forgot-password">Forgot password?</Link>
             </div>
 
-            <Button type="primary" htmlType="submit" loading={loading}>
+            <CButton type="submit" loading={loading}>
               Login
-            </Button>
+            </CButton>
           </form>
 
           {loading && (
