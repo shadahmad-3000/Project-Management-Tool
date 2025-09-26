@@ -15,7 +15,7 @@ const CButton = ({
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
-      className={`btn btn-${variant} ${className}`}
+      className={`btn btn-${variant} ${className} primary-button`}
       {...more}
     >
       {loading ? "Loading" : children}
