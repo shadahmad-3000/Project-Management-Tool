@@ -79,6 +79,7 @@ const VerifyOtp = () => {
           onClick={handleResendOtp}
           disabled={timer > 0}
           style={{ width: "100%" }}
+          variant="text"
         >
           {timer > 0
             ? `Resend in ${Math.floor(timer / 60)}:${String(

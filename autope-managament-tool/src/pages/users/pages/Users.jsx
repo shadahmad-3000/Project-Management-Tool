@@ -157,7 +157,7 @@ const UsersPage = () => {
               <CButton
                 onClick={() => navigate(`/home/users/edit/${record.empID}`)}
                 className="p-0"
-                style={{ background: "transparent", border: "none" }}
+                variant="text"
               >
                 <EditOutlined style={{ color: "blue" }} />
               </CButton>
@@ -173,14 +173,7 @@ const UsersPage = () => {
                   cancelText="No"
                   disabled={isSuperAdmin}
                 >
-                  <CButton
-                    disabled={isSuperAdmin}
-                    style={{
-                      background: "transparent",
-                      border: "none",
-                      padding: 0,
-                    }}
-                  >
+                  <CButton disabled={isSuperAdmin} variant="primary">
                     <DeleteOutlined
                       style={{ color: isSuperAdmin ? "gray" : "red" }}
                     />

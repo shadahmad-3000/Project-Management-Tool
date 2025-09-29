@@ -98,7 +98,7 @@ const TasksPage = () => {
             <CButton
               onClick={() => navigate(`/home/tasks/edit/${record.taskId}`)}
               className="p-0"
-              style={{ background: "transparent", border: "none" }}
+              variant="text"
             >
               <EditOutlined style={{ color: "blue" }} />
             </CButton>
