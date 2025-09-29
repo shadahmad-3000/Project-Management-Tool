@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Input, Card, message as antdMessage } from "antd";
+import { Card, message as antdMessage } from "antd";
 import { userResendOtp, userVerifyOtp } from "../../../utils/OtpVerification";
 import CButton from "../../../components/common/CButton";
+import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
 
 const VerifyOtp = () => {
   const location = useLocation();
@@ -60,13 +61,17 @@ const VerifyOtp = () => {
           account.
         </p>
 
-        <Input
-          placeholder="Enter OTP"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-          style={{
+        <FloatingLabelInput
+          label="Enter OTP"
+          inputValue={otp}
+          onChangeInputText={(val) =>
+            setOtp(typeof val === "string" ? val : val.text)
+          }
+          inputStyle={{
             backgroundColor: "#1f1f1f",
             color: "#f5f5f5",
+          }}
+          containerStyle={{
             border: "1px solid #333",
           }}
         />

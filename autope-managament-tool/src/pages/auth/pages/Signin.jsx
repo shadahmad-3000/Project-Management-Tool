@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Card, Spin, message as antdMessage } from "antd";
 import { EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
 import CButton from "../../../components/common/CButton";
+import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
 
 const Signin = () => {
   const [credentials, setCredentials] = useState({
@@ -93,23 +94,44 @@ const Signin = () => {
           <form onSubmit={handleSubmit}>
             <div>
               <div>
-                <input
-                  type="email"
-                  placeholder="Email address"
-                  value={credentials.email}
-                  onChange={(e) => handleChange("email", e.target.value)}
+                <FloatingLabelInput
+                  label="Email address"
+                  inputValue={credentials.email}
+                  onChangeInputText={(val) =>
+                    handleChange(
+                      "email",
+                      typeof val === "string" ? val : val.text
+                    )
+                  }
+                  keyboardType="email"
                 />
               </div>
             </div>
 
-            <div>
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                value={credentials.password}
-                onChange={(e) => handleChange("password", e.target.value)}
+            <div style={{ position: "relative", width: "100%" }}>
+              <FloatingLabelInput
+                label="Password"
+                inputValue={credentials.password}
+                onChangeInputText={(val) =>
+                  handleChange(
+                    "password",
+                    typeof val === "string" ? val : val.text
+                  )
+                }
+                secureTextEntry={!showPassword}
               />
-              <span onClick={() => setShowPassword(!showPassword)}>
+
+              <span
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: "absolute",
+                  right: 12,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  cursor: "pointer",
+                  zIndex: 5,
+                }}
+              >
                 {showPassword ? <EyeTwoTone /> : <EyeInvisibleOutlined />}
               </span>
             </div>

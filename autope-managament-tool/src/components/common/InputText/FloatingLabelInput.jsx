@@ -1,11 +1,5 @@
 // FloatingLabelInput.jsx
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useImperativeHandle,
-  useContext,
-} from "react";
+import React, { useState, useEffect, useRef, useImperativeHandle } from "react";
 import "./FloatingLabelInput.css";
 import { validateCustomRegExp, validateRegExp } from "../../../utils/utils";
 
@@ -51,7 +45,6 @@ const FloatingLabelInput = React.forwardRef((props, ref) => {
   const inputRef = useRef(null);
   const [value, setValue] = useState(inputValue || "");
   const [isFocused, setIsFocused] = useState(false);
-  const { translate } = useContext(AppContext);
 
   useEffect(() => {
     setValue(inputValue ?? "");
