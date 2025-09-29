@@ -1,4 +1,4 @@
-import { Layout as AntLayout, Menu, message } from "antd";
+import React from "react";
 import {
   HomeOutlined,
   AppstoreOutlined,
@@ -9,14 +9,11 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { userLogout } from "../../../utils/UserLogin";
 import { showLogoutConfirm } from "../../auth/components/LogoutConfirmModal";
 
-const { Sider, Content } = AntLayout;
-
 const DashboardLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   const userRole = localStorage.getItem("userRole");
-  console.log("userRole", userRole);
 
   const topItems = [
     { key: "/home", icon: <HomeOutlined />, label: "Home" },
@@ -35,11 +32,11 @@ const DashboardLayout = () => {
     { key: "logout", icon: <LogoutOutlined />, label: "Logout" },
   ];
 
-  const handleTopClick = ({ key }) => {
+  const handleTopClick = (key) => {
     navigate(key);
   };
 
-  const handleBottomClick = ({ key }) => {
+  const handleBottomClick = (key) => {
     if (key === "logout") {
       showLogoutConfirm(async () => {
         try {
@@ -47,10 +44,10 @@ const DashboardLayout = () => {
           const email = localStorage.getItem("userEmail");
           if (token && email) {
             const res = await userLogout(token, email);
-            message.success(res.data?.message || "Logged out successfully");
+            alert(res.data?.message || "Logged out successfully");
           }
         } catch (err) {
-          message.error(err.response?.data?.message || "Logout failed");
+          alert(err.response?.data?.message || "Logout failed");
         } finally {
           localStorage.removeItem("token");
           localStorage.removeItem("userEmail");
@@ -62,50 +59,52 @@ const DashboardLayout = () => {
   };
 
   return (
-    <AntLayout style={{ height: "100vh", overflow: "hidden" }}>
-      <Sider
-        theme="dark"
-        width={70}
-        collapsed
-        collapsedWidth={70}
-        trigger={null}
+    <div className="d-flex" style={{ height: "100vh", overflow: "hidden" }}>
+      <div
+        className="d-flex flex-column justify-content-between bg-dark text-white"
         style={{
-          height: "calc(100vh - 80px)",
+          width: "70px",
           position: "fixed",
+          top: "80px",
+          bottom: 0,
           left: 0,
-          top: 80,
         }}
       >
-        <div
-          style={{ display: "flex", flexDirection: "column", height: "100%" }}
-        >
-          <Menu
-            mode="inline"
-            selectedKeys={[location.pathname]}
-            onClick={handleTopClick}
-            items={topItems}
-            style={{ flex: 1, borderRight: 0 }}
-          />
-          <Menu
-            mode="inline"
-            selectable={false}
-            onClick={handleBottomClick}
-            items={bottomItems}
-          />
-        </div>
-      </Sider>
+        <ul className="nav flex-column text-center">
+          {topItems.map((item) => (
+            <li
+              key={item.key}
+              className={`nav-item py-3 ${
+                location.pathname === item.key ? "bg-secondary" : ""
+              }`}
+              style={{ cursor: "pointer" }}
+              onClick={() => handleTopClick(item.key)}
+            >
+              {item.icon}
+              <div style={{ fontSize: "10px" }}>{item.label}</div>
+            </li>
+          ))}
+        </ul>
 
-      <AntLayout style={{ marginLeft: 70, height: "100vh" }}>
-        <Content
-          style={{
-            padding: 20,
-            height: "100%",
-          }}
-        >
-          <Outlet />
-        </Content>
-      </AntLayout>
-    </AntLayout>
+        <ul className="nav flex-column text-center border-top">
+          {bottomItems.map((item) => (
+            <li
+              key={item.key}
+              className="nav-item py-3"
+              style={{ cursor: "pointer" }}
+              onClick={() => handleBottomClick(item.key)}
+            >
+              {item.icon}
+              <div style={{ fontSize: "10px" }}>{item.label}</div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div style={{ marginLeft: "70px", flex: 1, padding: "20px" }}>
+        <Outlet />
+      </div>
+    </div>
   );
 };
 

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { Button, Card, message as antdMessage } from "antd";
 import { EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { userChangePassword } from "../../../utils/UserLogin";
 import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
+import CButton from "../../../components/common/CButton";
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -13,55 +13,55 @@ const ResetPassword = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleReset = async (e) => {
     e.preventDefault();
 
     if (newPassword !== confirmPassword) {
-      return antdMessage.error("Passwords do not match");
+      alert("Passwords do not match");
+      return;
     }
 
     setLoading(true);
     try {
       const email = localStorage.getItem("userEmail");
       const oldPassword = location.state?.oldPassword;
+
       await userChangePassword({ email, newPassword, oldPassword });
 
-      antdMessage.success("Password updated successfully! Please login again.");
+      alert("Password updated successfully! Please login again.");
       localStorage.removeItem("token");
       navigate("/signin", { replace: true });
     } catch (err) {
-      antdMessage.error(
-        err.response?.data?.message || "Failed to reset password"
-      );
+      console.error("Password reset failed:", err);
+      alert(err.response?.data?.message || "Failed to reset password");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="relative min-h-screen flex justify-center items-center bg-gradient-to-br from-purple-50 via-white to-blue-100">
-      <Card
-        className="shadow-2xl border border-gray-200 backdrop-blur-md"
-        style={{ width: "420px", padding: "32px", borderRadius: "16px" }}
+    <div
+      className="d-flex justify-content-center align-items-center min-vh-100"
+      style={{
+        background:
+          "linear-gradient(to bottom right, #f3e8ff, #ffffff, #dbeafe)",
+      }}
+    >
+      <div
+        className="card shadow p-4"
+        style={{ width: "420px", borderRadius: "16px" }}
       >
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Set Your Password
-          </h2>
-          <p className="text-gray-500 text-sm">
+        <div className="text-center mb-4">
+          <h2 className="fw-bold mb-2">Set Your Password</h2>
+          <p className="text-muted small">
             Please create a new password to continue
           </p>
         </div>
 
-        <form onSubmit={handleReset} className="space-y-6">
-          <div
-            style={{
-              position: "relative",
-              width: "100%",
-              marginBottom: "12px",
-            }}
-          >
+        <form onSubmit={handleReset}>
+          <div className="mb-3 position-relative">
             <FloatingLabelInput
               label="New Password"
               inputValue={newPassword}
@@ -70,7 +70,6 @@ const ResetPassword = () => {
               }
               secureTextEntry={!showNewPassword}
             />
-
             <span
               onClick={() => setShowNewPassword(!showNewPassword)}
               style={{
@@ -86,13 +85,7 @@ const ResetPassword = () => {
             </span>
           </div>
 
-          <div
-            style={{
-              position: "relative",
-              width: "100%",
-              marginBottom: "12px",
-            }}
-          >
+          <div className="mb-4 position-relative">
             <FloatingLabelInput
               label="Confirm Password"
               inputValue={confirmPassword}
@@ -101,7 +94,6 @@ const ResetPassword = () => {
               }
               secureTextEntry={!showConfirmPassword}
             />
-
             <span
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               style={{
@@ -117,19 +109,15 @@ const ResetPassword = () => {
             </span>
           </div>
 
-          <Button
-            type="primary"
-            htmlType="submit"
+          <CButton
+            type="submit"
             loading={loading}
-            className="w-full py-3 rounded-lg text-lg font-semibold 
-                       bg-gradient-to-r from-purple-500 to-blue-600 
-                       hover:from-blue-600 hover:to-purple-500 
-                       transition-all duration-300 shadow-md"
+            style={{ width: "100%", padding: "12px", fontSize: "16px" }}
           >
             Reset Password
-          </Button>
+          </CButton>
         </form>
-      </Card>
+      </div>
     </div>
   );
 };

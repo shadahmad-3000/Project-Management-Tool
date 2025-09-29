@@ -9,7 +9,7 @@ import { getTeams } from "../../../utils/team";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import CButton from "../../../components/common/CButton";
-import FloatingLabelInput from "../../../components/common/FloatingLabelInput";
+import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
 
 const AddEditProject = () => {
   const [loading, setLoading] = useState(false);
@@ -228,7 +228,6 @@ const AddEditProject = () => {
         </select>
       </div>
 
-      {/* Teams */}
       <div className="mb-3">
         <label className="form-label">Assign To Team</label>
         <select
