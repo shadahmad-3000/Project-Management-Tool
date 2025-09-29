@@ -27,8 +27,7 @@ const AddEditTeam = () => {
         const token = localStorage.getItem("token");
         const res = await getUsers(token);
         setUsers(res.data?.data || []);
-      } catch (err) {
-        console.error("Failed to fetch users", err);
+      } catch {
         alert("Failed to fetch users");
       }
     };
@@ -50,8 +49,7 @@ const AddEditTeam = () => {
             team.teamMembers?.map((m) => (typeof m === "object" ? m._id : m)) ||
               []
           );
-        } catch (err) {
-          console.error("Failed to load team details", err);
+        } catch {
           alert("Failed to load team details");
         } finally {
           setInitialLoading(false);
@@ -85,8 +83,7 @@ const AddEditTeam = () => {
       }
 
       navigate("/home/teams");
-    } catch (err) {
-      console.error("Save failed", err);
+    } catch {
       alert("Failed to save team");
     } finally {
       setLoading(false);
@@ -94,54 +91,49 @@ const AddEditTeam = () => {
   };
 
   if (initialLoading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center mt-5">
-        <div className="spinner-border text-light" role="status"></div>
-      </div>
-    );
+    return <div className="form-card">Loading...</div>;
   }
 
   return (
-    <div
-      className="card p-4"
-      style={{
-        backgroundColor: "#1f1f1f",
-        color: "#f5f5f5",
-        borderRadius: "10px",
-      }}
-    >
-      <CButton onClick={() => navigate(-1)} variant="text">
-        <ArrowLeftOutlined style={{ marginRight: 6 }} />
-        Back
-      </CButton>
+    <div className="form-card">
+      <div className="form-header">
+        <CButton onClick={() => navigate(-1)} variant="text">
+          <ArrowLeftOutlined style={{ marginRight: 6 }} /> Back
+        </CButton>
+        <h2 className="form-title">
+          {isEditMode ? "Edit Team" : "Create Team"}
+        </h2>
+      </div>
 
-      <h2 className="my-3">{isEditMode ? "Edit Team" : "Create Team"}</h2>
+      <div className="form-group">
+        <FloatingLabelInput
+          label="Team Name"
+          inputValue={name}
+          onChangeInputText={(val) =>
+            setName(typeof val === "string" ? val : val.text)
+          }
+        />
+        {!name && showErrors && (
+          <p className="form-error">Team Name is required</p>
+        )}
+      </div>
 
-      <FloatingLabelInput
-        label="Team Name"
-        inputValue={name}
-        onChangeInputText={(val) =>
-          setName(typeof val === "string" ? val : val.text)
-        }
-      />
-      {!name && showErrors && (
-        <p className="text-danger">Team Name is required</p>
-      )}
+      <div className="form-group">
+        <FloatingLabelInput
+          label="Team Code"
+          inputValue={teamCodeInput}
+          disabled={isEditMode}
+          onChangeInputText={(val) =>
+            setTeamCodeInput(typeof val === "string" ? val : val.text)
+          }
+        />
+        {!teamCodeInput && showErrors && (
+          <p className="form-error">Team Code is required</p>
+        )}
+      </div>
 
-      <FloatingLabelInput
-        label="Team Code"
-        inputValue={teamCodeInput}
-        disabled={isEditMode}
-        onChangeInputText={(val) =>
-          setTeamCodeInput(typeof val === "string" ? val : val.text)
-        }
-      />
-      {!teamCodeInput && showErrors && (
-        <p className="text-danger">Team Code is required</p>
-      )}
-
-      <div className="mb-3">
-        <label className="form-label">Team Members</label>
+      <div className="form-group">
+        <label>Team Members</label>
         <select
           multiple
           className="form-select"
@@ -159,7 +151,7 @@ const AddEditTeam = () => {
           ))}
         </select>
         {teamMembers.length === 0 && showErrors && (
-          <p className="text-danger">Select at least one member</p>
+          <p className="form-error">Select at least one member</p>
         )}
       </div>
 

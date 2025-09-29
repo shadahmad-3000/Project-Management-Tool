@@ -36,8 +36,7 @@ const AddEditTask = () => {
       try {
         const res = await getUsers();
         setUsers(res.data?.data || []);
-      } catch (err) {
-        console.error("Error fetching users:", err);
+      } catch {
         alert("Failed to fetch users");
       }
     };
@@ -51,8 +50,7 @@ const AddEditTask = () => {
         if (!token) return;
         const res = await getTeams(token);
         setTeams(res.data?.data || []);
-      } catch (err) {
-        console.error("Error fetching teams:", err);
+      } catch {
         alert("Failed to fetch teams");
       }
     };
@@ -86,7 +84,7 @@ const AddEditTask = () => {
           setTaskStatus(task.taskStatus || "");
           setTaskDuration(task.taskDuration || "");
           setTaskPriority(task.taskPriority || "");
-        } catch (err) {
+        } catch {
           alert("Failed to load task details");
         } finally {
           setInitialLoading(false);
@@ -140,64 +138,62 @@ const AddEditTask = () => {
   };
 
   if (initialLoading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center mt-5">
-        <div className="spinner-border text-light" role="status"></div>
-      </div>
-    );
+    return <div className="form-card">Loading...</div>;
   }
 
   return (
-    <div
-      className="card p-4"
-      style={{
-        backgroundColor: "#1f1f1f",
-        color: "#f5f5f5",
-        borderRadius: "10px",
-      }}
-    >
-      <CButton onClick={() => navigate(-1)} variant="text">
-        <ArrowLeftOutlined style={{ marginRight: 6 }} /> Back
-      </CButton>
+    <div className="form-card">
+      <div className="form-header">
+        <CButton onClick={() => navigate(-1)} variant="text">
+          <ArrowLeftOutlined style={{ marginRight: 6 }} /> Back
+        </CButton>
+        <h2 className="form-title">
+          {isEditMode ? "Edit Task" : "Create Task"}
+        </h2>
+      </div>
 
-      <h2 className="my-3">{isEditMode ? "Edit Task" : "Create Task"}</h2>
+      <div className="form-group">
+        <FloatingLabelInput
+          label="Task Name"
+          inputValue={taskName}
+          onChangeInputText={(val) =>
+            setTaskName(typeof val === "string" ? val : val.text)
+          }
+        />
+        {!taskName && showErrors && (
+          <p className="form-error">Task name is required</p>
+        )}
+      </div>
 
-      <FloatingLabelInput
-        label="Task Name"
-        inputValue={taskName}
-        onChangeInputText={(val) =>
-          setTaskName(typeof val === "string" ? val : val.text)
-        }
-      />
-      {!taskName && showErrors && (
-        <p className="text-danger">Task name is required</p>
-      )}
+      <div className="form-group">
+        <FloatingLabelInput
+          label="Task ID"
+          inputValue={taskCode}
+          disabled={isEditMode}
+          onChangeInputText={(val) =>
+            setTaskCode(typeof val === "string" ? val : val.text)
+          }
+        />
+        {!taskCode && showErrors && (
+          <p className="form-error">Task ID is required</p>
+        )}
+      </div>
 
-      <FloatingLabelInput
-        label="Task ID"
-        inputValue={taskCode}
-        disabled={isEditMode}
-        onChangeInputText={(val) =>
-          setTaskCode(typeof val === "string" ? val : val.text)
-        }
-      />
-      {!taskCode && showErrors && (
-        <p className="text-danger">Task ID is required</p>
-      )}
+      <div className="form-group">
+        <FloatingLabelInput
+          label="Description"
+          inputValue={description}
+          onChangeInputText={(val) =>
+            setDescription(typeof val === "string" ? val : val.text)
+          }
+        />
+        {!description && showErrors && (
+          <p className="form-error">Description is required</p>
+        )}
+      </div>
 
-      <FloatingLabelInput
-        label="Description"
-        inputValue={description}
-        onChangeInputText={(val) =>
-          setDescription(typeof val === "string" ? val : val.text)
-        }
-      />
-      {!description && showErrors && (
-        <p className="text-danger">Description is required</p>
-      )}
-
-      <div className="mb-3">
-        <label className="form-label">Assign To Team</label>
+      <div className="form-group">
+        <label>Assign To Team</label>
         <select
           multiple
           className="form-select"
@@ -220,8 +216,8 @@ const AddEditTask = () => {
         </select>
       </div>
 
-      <div className="mb-3">
-        <label className="form-label">Assignee Emails</label>
+      <div className="form-group">
+        <label>Assignee Emails</label>
         <select
           multiple
           className="form-select"
@@ -240,29 +236,29 @@ const AddEditTask = () => {
         </select>
       </div>
 
-      <div className="row my-3">
-        <div className="col">
-          <label className="form-label">Start Date</label>
+      <div className="form-row">
+        <div className="form-group">
+          <label>Start Date</label>
           <input
             type="datetime-local"
-            className="form-control"
+            className="form-input"
             value={taskDeadlineStart}
             onChange={(e) => setTaskDeadlineStart(e.target.value)}
           />
         </div>
-        <div className="col">
-          <label className="form-label">End Date</label>
+        <div className="form-group">
+          <label>End Date</label>
           <input
             type="datetime-local"
-            className="form-control"
+            className="form-input"
             value={taskDeadlineEnd}
             onChange={(e) => setTaskDeadlineEnd(e.target.value)}
           />
         </div>
       </div>
 
-      <div className="mb-3">
-        <label className="form-label">Task Status</label>
+      <div className="form-group">
+        <label>Task Status</label>
         <select
           className="form-select"
           value={taskStatus}
@@ -277,20 +273,22 @@ const AddEditTask = () => {
         </select>
       </div>
 
-      <FloatingLabelInput
-        label="Duration (in hours)"
-        inputValue={taskDuration}
-        keyboardType="number-pad"
-        onChangeInputText={(val) =>
-          setTaskDuration(typeof val === "string" ? val : val.text)
-        }
-      />
-      {!taskDuration && showErrors && (
-        <p className="text-danger">Task duration is required</p>
-      )}
+      <div className="form-group">
+        <FloatingLabelInput
+          label="Duration (in hours)"
+          inputValue={taskDuration}
+          keyboardType="number-pad"
+          onChangeInputText={(val) =>
+            setTaskDuration(typeof val === "string" ? val : val.text)
+          }
+        />
+        {!taskDuration && showErrors && (
+          <p className="form-error">Task duration is required</p>
+        )}
+      </div>
 
-      <div className="mb-3">
-        <label className="form-label">Priority</label>
+      <div className="form-group">
+        <label>Priority</label>
         <select
           className="form-select"
           value={taskPriority}

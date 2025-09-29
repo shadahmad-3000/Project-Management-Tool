@@ -129,78 +129,82 @@ const AddEditProject = () => {
 
   if (initialLoading) {
     return (
-      <div className="d-flex justify-content-center align-items-center mt-5">
-        <div className="spinner-border text-light" role="status"></div>
+      <div className="form-card">
+        <p>Loading...</p>
       </div>
     );
   }
 
   return (
-    <div
-      className="card p-4"
-      style={{
-        backgroundColor: "#141414",
-        color: "#f5f5f5",
-        borderRadius: "10px",
-      }}
-    >
-      <CButton onClick={() => navigate(-1)} variant="text">
-        <ArrowLeftOutlined style={{ marginRight: 6 }} /> Back
-      </CButton>
+    <div className="form-card">
+      <div className="form-header">
+        <CButton onClick={() => navigate(-1)} variant="text">
+          <ArrowLeftOutlined style={{ marginRight: 6 }} /> Back
+        </CButton>
+        <h2 className="form-title">
+          {isEditMode ? "Edit Project" : "Create Project"}
+        </h2>
+      </div>
 
-      <h2 className="my-3">{isEditMode ? "Edit Project" : "Create Project"}</h2>
+      <div className="form-group">
+        <FloatingLabelInput
+          label="Title"
+          inputValue={title}
+          onChangeInputText={(val) =>
+            setTitle(typeof val === "string" ? val : val.text)
+          }
+        />
+        {!title && showErrors && (
+          <p className="form-error">Title is required</p>
+        )}
+      </div>
 
-      <FloatingLabelInput
-        label="Title"
-        inputValue={title}
-        onChangeInputText={(val) =>
-          setTitle(typeof val === "string" ? val : val.text)
-        }
-      />
-      {!title && showErrors && <p className="text-danger">Title is required</p>}
+      <div className="form-group">
+        <FloatingLabelInput
+          label="Description"
+          inputValue={description}
+          onChangeInputText={(val) =>
+            setDescription(typeof val === "string" ? val : val.text)
+          }
+        />
+      </div>
 
-      <FloatingLabelInput
-        label="Description"
-        inputValue={description}
-        onChangeInputText={(val) =>
-          setDescription(typeof val === "string" ? val : val.text)
-        }
-      />
+      <div className="form-group">
+        <FloatingLabelInput
+          label="Project Code"
+          inputValue={projectCodeInput}
+          onChangeInputText={(val) =>
+            setProjectCodeInput(typeof val === "string" ? val : val.text)
+          }
+        />
+        {!projectCodeInput && showErrors && (
+          <p className="form-error">Code is required</p>
+        )}
+      </div>
 
-      <FloatingLabelInput
-        label="Project Code"
-        inputValue={projectCodeInput}
-        onChangeInputText={(val) =>
-          setProjectCodeInput(typeof val === "string" ? val : val.text)
-        }
-      />
-      {!projectCodeInput && showErrors && (
-        <p className="text-danger">Code is required</p>
-      )}
-
-      <div className="row my-3">
-        <div className="col">
-          <label className="form-label">Start Date</label>
+      <div className="form-row">
+        <div className="form-group">
+          <label>Start Date</label>
           <input
             type="date"
-            className="form-control"
+            className="form-input"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
           />
         </div>
-        <div className="col">
-          <label className="form-label">End Date</label>
+        <div className="form-group">
+          <label>End Date</label>
           <input
             type="date"
-            className="form-control"
+            className="form-input"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
           />
         </div>
       </div>
 
-      <div className="mb-3">
-        <label className="form-label">Status</label>
+      <div className="form-group">
+        <label>Status</label>
         <select
           className="form-select"
           value={status}
@@ -214,8 +218,8 @@ const AddEditProject = () => {
         </select>
       </div>
 
-      <div className="mb-3">
-        <label className="form-label">Priority</label>
+      <div className="form-group">
+        <label>Priority</label>
         <select
           className="form-select"
           value={priority}
@@ -228,8 +232,8 @@ const AddEditProject = () => {
         </select>
       </div>
 
-      <div className="mb-3">
-        <label className="form-label">Assign To Team</label>
+      <div className="form-group">
+        <label>Assign To Team</label>
         <select
           multiple
           className="form-select"

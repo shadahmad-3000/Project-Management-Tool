@@ -75,7 +75,6 @@ const UsersPage = () => {
 
   return (
     <div className="page-card">
-      {/* Header */}
       <div className="page-header">
         <h2 className="page-title">Users</h2>
 
@@ -96,7 +95,6 @@ const UsersPage = () => {
         </div>
       </div>
 
-      {/* Table */}
       <div className="page-table">
         <table>
           <thead>
