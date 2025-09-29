@@ -99,14 +99,7 @@ const AddEditTeam = () => {
         borderRadius: "10px",
       }}
     >
-      <CButton
-        onClick={() => navigate(-1)}
-        style={{
-          background: "transparent",
-          border: "none",
-          color: "var(--text-color)",
-        }}
-      >
+      <CButton onClick={() => navigate(-1)} variant="text">
         <ArrowLeftOutlined style={{ marginRight: 6 }} />
         Back
       </CButton>

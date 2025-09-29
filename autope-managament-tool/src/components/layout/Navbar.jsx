@@ -16,17 +16,7 @@ const Navbar = () => {
           </span>
         </div>
       </div>
-      <CButton
-        variant="secondary"
-        className="text-blue"
-        style={{
-          backgroundColor: "transparent",
-          border: "2px solid var(--blue)",
-          color: "var(--blue)",
-        }}
-      >
-        Contact Us
-      </CButton>
+      <CButton variant="text">Contact Us</CButton>
     </header>
   );
 };

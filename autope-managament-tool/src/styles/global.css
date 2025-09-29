@@ -17,6 +17,9 @@
   --input-height: 55px;
   --border-radius: 4px;
   --label-bg: var(--bg-color);
+
+  --primary-buttonBgColor: var(--blue);
+  --primary-buttonTextColor: #ffffff;
 }
 
 html,

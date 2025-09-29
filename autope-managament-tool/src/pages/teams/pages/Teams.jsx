@@ -89,7 +89,7 @@ const TeamsPage = () => {
             <CButton
               onClick={() => navigate(`/home/teams/edit/${record.teamCode}`)}
               className="p-0"
-              style={{ background: "transparent", border: "none" }}
+              variant="text"
             >
               <EditOutlined style={{ color: "blue" }} />
             </CButton>

@@ -146,15 +146,7 @@ const ApproveUsers = () => {
               okText="Yes, Decline"
               cancelText="Cancel"
             >
-              <CButton
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  color: "red",
-                }}
-              >
-                Decline
-              </CButton>
+              <CButton variant="danger">Decline</CButton>
             </Popconfirm>
 
             <Select
@@ -173,11 +165,7 @@ const ApproveUsers = () => {
             <CButton
               onClick={() => handleAssignRole(record.email, id)}
               disabled={!roleSelections[id] && roleSelections[id] !== "User"}
-              style={{
-                backgroundColor: "green",
-                borderColor: "green",
-                color: "white",
-              }}
+              variant="primary"
             >
               Assign
             </CButton>
