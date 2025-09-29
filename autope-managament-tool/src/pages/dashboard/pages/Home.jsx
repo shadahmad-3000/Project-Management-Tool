@@ -19,46 +19,27 @@ const Home = () => {
   ];
 
   return (
-    <div className="d-flex" style={{ height: "100vh", overflow: "hidden" }}>
-      <div
-        className="bg-dark text-white d-flex flex-column"
-        style={{
-          width: "200px",
-          position: "fixed",
-          top: 0,
-          bottom: 0,
-          left: 0,
-        }}
-      >
-        <ul className="nav flex-column">
+    <div className="home-layout">
+      <aside className="home-sidebar">
+        <ul className="menu vertical">
           {menuItems.map((item) => (
             <li
               key={item.key}
-              className={`nav-item py-3 px-3 d-flex align-items-center ${
-                location.pathname === item.key ? "bg-secondary" : ""
+              className={`menu-item ${
+                location.pathname === item.key ? "active" : ""
               }`}
-              style={{ cursor: "pointer" }}
               onClick={() => navigate(item.key)}
             >
               {item.icon}
-              <span style={{ marginLeft: "10px" }}>{item.label}</span>
+              <span className="label">{item.label}</span>
             </li>
           ))}
         </ul>
-      </div>
+      </aside>
 
-      <div
-        style={{
-          marginLeft: "200px",
-          flex: 1,
-          padding: "20px",
-          background: "#000",
-          height: "100vh",
-          overflowY: "auto",
-        }}
-      >
+      <main className="home-content">
         <Outlet />
-      </div>
+      </main>
     </div>
   );
 };

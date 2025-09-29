@@ -7,10 +7,7 @@ import CButton from "../../../components/common/CButton";
 import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
 
 const Signin = () => {
-  const [credentials, setCredentials] = useState({
-    email: "",
-    password: "",
-  });
+  const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -68,32 +65,15 @@ const Signin = () => {
   };
 
   return (
-    <div
-      className="d-flex justify-content-center align-items-center min-vh-100"
-      style={{
-        backgroundImage:
-          "url('https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1600&q=80')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <div
-        className="card shadow p-4"
-        style={{
-          width: "420px",
-          backgroundColor: "rgba(255,255,255,0.9)",
-          borderRadius: "16px",
-        }}
-      >
-        <div className="text-center mb-4">
-          <h2 className="fw-bold mb-2">Welcome back!</h2>
-          <p className="text-muted small">
-            Sign in to continue to your account
-          </p>
+    <div className="signin-container">
+      <div className="signin-card">
+        <div className="signin-header">
+          <h2>Welcome back!</h2>
+          <p>Sign in to continue to your account</p>
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-3">
+          <div className="form-group">
             <FloatingLabelInput
               label="Email address"
               inputValue={credentials.email}
@@ -104,7 +84,7 @@ const Signin = () => {
             />
           </div>
 
-          <div className="mb-3 position-relative">
+          <div className="form-group password-group">
             <FloatingLabelInput
               label="Password"
               inputValue={credentials.password}
@@ -118,21 +98,14 @@ const Signin = () => {
             />
             <span
               onClick={() => setShowPassword(!showPassword)}
-              style={{
-                position: "absolute",
-                right: 12,
-                top: "50%",
-                transform: "translateY(-50%)",
-                cursor: "pointer",
-                zIndex: 5,
-              }}
+              className="password-toggle"
             >
               {showPassword ? <EyeTwoTone /> : <EyeInvisibleOutlined />}
             </span>
           </div>
 
-          <div className="text-end mb-3">
-            <Link to="/forgot-password" className="small">
+          <div className="form-footer">
+            <Link to="/forgot-password" className="forgot-link">
               Forgot password?
             </Link>
           </div>
@@ -143,8 +116,8 @@ const Signin = () => {
         </form>
 
         {loading && (
-          <div className="d-flex justify-content-center align-items-center mt-3">
-            <div className="spinner-border text-primary" role="status"></div>
+          <div className="loading">
+            <div className="spinner-border" role="status"></div>
           </div>
         )}
       </div>

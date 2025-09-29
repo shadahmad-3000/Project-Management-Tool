@@ -3,6 +3,7 @@ import { getProject } from "../../../utils/superAdmin";
 import { useNavigate } from "react-router-dom";
 import CButton from "../../../components/common/CButton";
 import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
+import { EditOutlined } from "@ant-design/icons";
 
 const ProjectsPage = () => {
   const [projects, setProjects] = useState([]);
@@ -54,20 +55,12 @@ const ProjectsPage = () => {
   };
 
   return (
-    <div
-      className="card shadow-sm"
-      style={{
-        backgroundColor: "#f5f5f5",
-        borderRadius: "10px",
-        minHeight: "90vh",
-        padding: "20px",
-      }}
-    >
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2 className="mb-0 text-dark">Projects</h2>
+    <div className="page-card">
+      <div className="page-header">
+        <h2 className="page-title">Projects</h2>
 
-        <div className="d-flex align-items-center gap-2">
-          <div style={{ width: "250px" }}>
+        <div className="page-actions">
+          <div className="page-search">
             <FloatingLabelInput
               label="Search Projects"
               inputValue={searchValue}
@@ -76,17 +69,15 @@ const ProjectsPage = () => {
           </div>
           {(userRole === "Super-Admin" || userRole === "Admin") && (
             <CButton onClick={() => navigate("/home/projects/add")}>
-              <span style={{ marginRight: "8px" }}>＋</span>
-              New Project
+              ＋ New Project
             </CButton>
           )}
         </div>
       </div>
 
-      {/* Table */}
-      <div className="table-responsive">
-        <table className="table table-hover align-middle">
-          <thead className="table-dark">
+      <div className="page-table">
+        <table>
+          <thead>
             <tr>
               <th>Project Title</th>
               <th>Project Code</th>
@@ -131,7 +122,8 @@ const ProjectsPage = () => {
                           navigate(`/home/projects/edit/${project.projectCode}`)
                         }
                       >
-                        ✏️
+                        <EditOutlined />
+                        Edit
                       </CButton>
                     </td>
                   )}

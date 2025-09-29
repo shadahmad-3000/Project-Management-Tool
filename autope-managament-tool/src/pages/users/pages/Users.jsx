@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { deleteUser, getUsers } from "../../../utils/User";
 import CButton from "../../../components/common/CButton";
 import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -73,20 +74,13 @@ const UsersPage = () => {
   };
 
   return (
-    <div
-      className="card shadow-sm"
-      style={{
-        backgroundColor: "#fff",
-        borderRadius: "10px",
-        padding: "20px",
-        minHeight: "90vh",
-      }}
-    >
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2 className="mb-0">Users</h2>
+    <div className="page-card">
+      {/* Header */}
+      <div className="page-header">
+        <h2 className="page-title">Users</h2>
 
-        <div className="d-flex align-items-center gap-2">
-          <div style={{ width: "250px" }}>
+        <div className="page-actions">
+          <div className="page-search">
             <FloatingLabelInput
               label="Search Users"
               inputValue={searchValue}
@@ -96,16 +90,16 @@ const UsersPage = () => {
 
           {(userRole === "Super-Admin" || userRole === "Admin") && (
             <CButton onClick={() => navigate("/home/users/add")}>
-              <span style={{ marginRight: "8px" }}>＋</span>
-              New User
+              ＋ New User
             </CButton>
           )}
         </div>
       </div>
 
-      <div className="table-responsive">
-        <table className="table table-hover align-middle">
-          <thead className="table-dark">
+      {/* Table */}
+      <div className="page-table">
+        <table>
+          <thead>
             <tr>
               <th>User Name</th>
               <th>Employee ID</th>
@@ -139,31 +133,29 @@ const UsersPage = () => {
                     <td>{user.phoneNo}</td>
                     <td>
                       {user.isVerified ? (
-                        <span className="badge bg-success">Verified</span>
+                        <span className="badge badge-success">Verified</span>
                       ) : (
-                        <span className="badge bg-danger">Not Verified</span>
+                        <span className="badge badge-danger">Not Verified</span>
                       )}
                     </td>
                     <td>
                       {user.isApproved ? (
-                        <span className="badge bg-primary">Approved</span>
+                        <span className="badge badge-primary">Approved</span>
                       ) : (
-                        <span className="badge bg-warning text-dark">
-                          Pending
-                        </span>
+                        <span className="badge badge-warning">Pending</span>
                       )}
                     </td>
                     <td>{user.role}</td>
                     {(userRole === "Super-Admin" || userRole === "Admin") && (
                       <td>
-                        <div className="d-flex gap-2">
+                        <div className="action-buttons">
                           <CButton
                             variant="text"
                             onClick={() =>
                               navigate(`/home/users/edit/${user.empID}`)
                             }
                           >
-                            ✏️
+                            <EditOutlined />
                           </CButton>
                           <CButton
                             variant="text"
@@ -172,7 +164,7 @@ const UsersPage = () => {
                               handleDelete(user.empID, isSuperAdmin)
                             }
                           >
-                            🗑️
+                            <DeleteOutlined />
                           </CButton>
                         </div>
                       </td>

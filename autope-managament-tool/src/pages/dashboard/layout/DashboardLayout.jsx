@@ -28,82 +28,55 @@ const DashboardLayout = () => {
     });
   }
 
-  const bottomItems = [
-    { key: "logout", icon: <LogoutOutlined />, label: "Logout" },
-  ];
+  const handleTopClick = (key) => navigate(key);
 
-  const handleTopClick = (key) => {
-    navigate(key);
-  };
-
-  const handleBottomClick = (key) => {
-    if (key === "logout") {
-      showLogoutConfirm(async () => {
-        try {
-          const token = localStorage.getItem("token");
-          const email = localStorage.getItem("userEmail");
-          if (token && email) {
-            const res = await userLogout(token, email);
-            alert(res.data?.message || "Logged out successfully");
-          }
-        } catch (err) {
-          alert(err.response?.data?.message || "Logout failed");
-        } finally {
-          localStorage.removeItem("token");
-          localStorage.removeItem("userEmail");
-          localStorage.removeItem("userRole");
-          navigate("/signin");
+  const handleLogout = () => {
+    showLogoutConfirm(async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const email = localStorage.getItem("userEmail");
+        if (token && email) {
+          const res = await userLogout(token, email);
+          alert(res.data?.message || "Logged out successfully");
         }
-      });
-    }
+      } catch (err) {
+        alert(err.response?.data?.message || "Logout failed");
+      } finally {
+        localStorage.clear();
+        navigate("/signin");
+      }
+    });
   };
 
   return (
-    <div className="d-flex" style={{ height: "100vh", overflow: "hidden" }}>
-      <div
-        className="d-flex flex-column justify-content-between bg-dark text-white"
-        style={{
-          width: "70px",
-          position: "fixed",
-          top: "80px",
-          bottom: 0,
-          left: 0,
-        }}
-      >
-        <ul className="nav flex-column text-center">
+    <div className="dashboard-layout">
+      <aside className="dashboard-sidebar">
+        <ul className="menu vertical">
           {topItems.map((item) => (
             <li
               key={item.key}
-              className={`nav-item py-3 ${
-                location.pathname === item.key ? "bg-secondary" : ""
+              className={`menu-item ${
+                location.pathname === item.key ? "active" : ""
               }`}
-              style={{ cursor: "pointer" }}
               onClick={() => handleTopClick(item.key)}
             >
               {item.icon}
-              <div style={{ fontSize: "10px" }}>{item.label}</div>
+              <span className="label">{item.label}</span>
             </li>
           ))}
         </ul>
 
-        <ul className="nav flex-column text-center border-top">
-          {bottomItems.map((item) => (
-            <li
-              key={item.key}
-              className="nav-item py-3"
-              style={{ cursor: "pointer" }}
-              onClick={() => handleBottomClick(item.key)}
-            >
-              {item.icon}
-              <div style={{ fontSize: "10px" }}>{item.label}</div>
-            </li>
-          ))}
+        <ul className="menu vertical bottom">
+          <li className="menu-item" onClick={handleLogout}>
+            <LogoutOutlined />
+            <span className="label">Logout</span>
+          </li>
         </ul>
-      </div>
+      </aside>
 
-      <div style={{ marginLeft: "70px", flex: 1, padding: "20px" }}>
+      <main className="dashboard-content">
         <Outlet />
-      </div>
+      </main>
     </div>
   );
 };

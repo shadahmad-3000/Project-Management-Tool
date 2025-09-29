@@ -3,6 +3,7 @@ import { getTeams } from "../../../utils/team";
 import { useNavigate } from "react-router-dom";
 import CButton from "../../../components/common/CButton";
 import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
+import { EditOutlined } from "@ant-design/icons";
 
 const TeamsPage = () => {
   const [teams, setTeams] = useState([]);
@@ -52,20 +53,13 @@ const TeamsPage = () => {
   };
 
   return (
-    <div
-      className="card shadow-sm"
-      style={{
-        backgroundColor: "#fff",
-        borderRadius: "10px",
-        padding: "20px",
-        minHeight: "90vh",
-      }}
-    >
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2 className="mb-0">Teams</h2>
+    <div className="page-card">
+      {/* Header */}
+      <div className="page-header">
+        <h2 className="page-title">Teams</h2>
 
-        <div className="d-flex align-items-center gap-2">
-          <div style={{ width: "250px" }}>
+        <div className="page-actions">
+          <div className="page-search">
             <FloatingLabelInput
               label="Search Teams"
               inputValue={searchValue}
@@ -75,16 +69,16 @@ const TeamsPage = () => {
 
           {(userRole === "Super-Admin" || userRole === "Admin") && (
             <CButton onClick={() => navigate("/home/teams/add")}>
-              <span style={{ marginRight: "8px" }}>＋</span>
-              New Team
+              ＋ New Team
             </CButton>
           )}
         </div>
       </div>
 
-      <div className="table-responsive">
-        <table className="table table-hover align-middle">
-          <thead className="table-dark">
+      {/* Table */}
+      <div className="page-table">
+        <table>
+          <thead>
             <tr>
               <th>Team Name</th>
               <th>Team Code</th>
@@ -121,7 +115,7 @@ const TeamsPage = () => {
                           navigate(`/home/teams/edit/${team.teamCode}`)
                         }
                       >
-                        ✏️
+                        <EditOutlined />
                       </CButton>
                     </td>
                   )}

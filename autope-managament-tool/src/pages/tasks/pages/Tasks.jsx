@@ -4,6 +4,7 @@ import { getTask } from "../../../utils/superAdmin";
 import dayjs from "dayjs";
 import CButton from "../../../components/common/CButton";
 import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
+import { EditOutlined } from "@ant-design/icons";
 
 const TasksPage = () => {
   const [tasks, setTasks] = useState([]);
@@ -53,20 +54,12 @@ const TasksPage = () => {
   };
 
   return (
-    <div
-      className="card shadow-sm"
-      style={{
-        backgroundColor: "#fff",
-        borderRadius: "10px",
-        padding: "20px",
-        minHeight: "90vh",
-      }}
-    >
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2 className="mb-0">Tasks</h2>
+    <div className="page-card">
+      <div className="page-header">
+        <h2 className="page-title">Tasks</h2>
 
-        <div className="d-flex align-items-center gap-2">
-          <div style={{ width: "250px" }}>
+        <div className="page-actions">
+          <div className="page-search">
             <FloatingLabelInput
               label="Search Tasks"
               inputValue={searchValue}
@@ -76,16 +69,15 @@ const TasksPage = () => {
 
           {(userRole === "Super-Admin" || userRole === "Admin") && (
             <CButton onClick={() => navigate("/home/tasks/add")}>
-              <span style={{ marginRight: "8px" }}>＋</span>
-              New Task
+              ＋ New Task
             </CButton>
           )}
         </div>
       </div>
 
-      <div className="table-responsive">
-        <table className="table table-hover align-middle">
-          <thead className="table-dark">
+      <div className="page-table">
+        <table>
+          <thead>
             <tr>
               <th>Task Name</th>
               <th>Task ID</th>
@@ -142,7 +134,7 @@ const TasksPage = () => {
                             navigate(`/home/tasks/edit/${task.taskId}`)
                           }
                         >
-                          ✏️
+                          <EditOutlined />
                         </CButton>
                       </td>
                     )}
