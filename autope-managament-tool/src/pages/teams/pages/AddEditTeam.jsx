@@ -1,30 +1,24 @@
 import React, { useEffect, useState } from "react";
-import {
-  Form,
-  Input,
-  Button,
-  Card,
-  Select,
-  message as antdMessage,
-  Spin,
-} from "antd";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { getUsers } from "../../../utils/User";
 import { createTeam, updateTeam, getTeamById } from "../../../utils/team";
 import CButton from "../../../components/common/CButton";
-
-const { Option } = Select;
+import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
 
 const AddEditTeam = () => {
-  const [form] = Form.useForm();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(false);
+
+  const [name, setName] = useState("");
+  const [teamCodeInput, setTeamCodeInput] = useState("");
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [showErrors, setShowErrors] = useState(false);
+
   const navigate = useNavigate();
   const { teamCode } = useParams();
   const location = useLocation();
-
   const isEditMode = location.pathname.includes("edit");
 
   useEffect(() => {
@@ -34,9 +28,8 @@ const AddEditTeam = () => {
         const res = await getUsers(token);
         setUsers(res.data?.data || []);
       } catch (err) {
-        antdMessage.error(
-          err.response?.data?.message || "Failed to fetch users"
-        );
+        console.error("Failed to fetch users", err);
+        alert("Failed to fetch users");
       }
     };
     fetchUsers();
@@ -51,48 +44,66 @@ const AddEditTeam = () => {
           const res = await getTeamById(teamCode, token);
           const team = res.data?.data;
 
-          form.setFieldsValue({
-            ...team,
-            teamMembers: team.teamMembers?.map((m) =>
-              typeof m === "object" ? m._id : m
-            ),
-          });
+          setName(team.name || "");
+          setTeamCodeInput(team.teamCode || "");
+          setTeamMembers(
+            team.teamMembers?.map((m) => (typeof m === "object" ? m._id : m)) ||
+              []
+          );
         } catch (err) {
-          antdMessage.error("Failed to load team details");
+          console.error("Failed to load team details", err);
+          alert("Failed to load team details");
         } finally {
           setInitialLoading(false);
         }
       };
       fetchTeam();
     }
-  }, [isEditMode, teamCode, form]);
+  }, [isEditMode, teamCode]);
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async () => {
+    if (!name || !teamCodeInput || teamMembers.length === 0) {
+      setShowErrors(true);
+      return;
+    }
+
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
+      const payload = {
+        name,
+        teamCode: teamCodeInput,
+        teamMembers,
+      };
 
       if (isEditMode) {
-        const { teamCode, ...rest } = values;
-        await updateTeam({ teamCode, updateData: rest }, token);
-        antdMessage.success("Team updated successfully!");
+        await updateTeam({ teamCode, updateData: payload }, token);
+        alert("Team updated successfully!");
       } else {
-        await createTeam(values, token);
-        antdMessage.success("Team created successfully!");
+        await createTeam(payload, token);
+        alert("Team created successfully!");
       }
 
       navigate("/home/teams");
     } catch (err) {
-      antdMessage.error(err.response?.data?.message || "Failed to save team.");
+      console.error("Save failed", err);
+      alert("Failed to save team");
     } finally {
       setLoading(false);
     }
   };
 
-  if (initialLoading) return <Spin size="large" />;
+  if (initialLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center mt-5">
+        <div className="spinner-border text-light" role="status"></div>
+      </div>
+    );
+  }
 
   return (
-    <Card
+    <div
+      className="card p-4"
       style={{
         backgroundColor: "#1f1f1f",
         color: "#f5f5f5",
@@ -104,52 +115,62 @@ const AddEditTeam = () => {
         Back
       </CButton>
 
-      <h2>{isEditMode ? "Edit Team" : "Create Team"}</h2>
+      <h2 className="my-3">{isEditMode ? "Edit Team" : "Create Team"}</h2>
 
-      <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <Form.Item
-          label="Team Name"
-          name="name"
-          rules={[{ required: true, message: "Team Name is required" }]}
+      <FloatingLabelInput
+        label="Team Name"
+        inputValue={name}
+        onChangeInputText={(val) =>
+          setName(typeof val === "string" ? val : val.text)
+        }
+      />
+      {!name && showErrors && (
+        <p className="text-danger">Team Name is required</p>
+      )}
+
+      <FloatingLabelInput
+        label="Team Code"
+        inputValue={teamCodeInput}
+        disabled={isEditMode}
+        onChangeInputText={(val) =>
+          setTeamCodeInput(typeof val === "string" ? val : val.text)
+        }
+      />
+      {!teamCodeInput && showErrors && (
+        <p className="text-danger">Team Code is required</p>
+      )}
+
+      <div className="mb-3">
+        <label className="form-label">Team Members</label>
+        <select
+          multiple
+          className="form-select"
+          value={teamMembers}
+          onChange={(e) =>
+            setTeamMembers(
+              Array.from(e.target.selectedOptions, (opt) => opt.value)
+            )
+          }
         >
-          <Input placeholder="Enter team name" />
-        </Form.Item>
+          {users.map((user) => (
+            <option key={user._id} value={user._id}>
+              {user.name} ({user.email})
+            </option>
+          ))}
+        </select>
+        {teamMembers.length === 0 && showErrors && (
+          <p className="text-danger">Select at least one member</p>
+        )}
+      </div>
 
-        <Form.Item
-          label="Team Code"
-          name="teamCode"
-          rules={[{ required: true, message: "Team Code is required" }]}
-        >
-          <Input placeholder="Unique team code" disabled={isEditMode} />
-        </Form.Item>
-
-        <Form.Item
-          label="Team Members"
-          name="teamMembers"
-          rules={[{ required: true, message: "Select at least one member" }]}
-        >
-          <Select
-            mode="multiple"
-            placeholder="Select team members"
-            optionLabelProp="label"
-          >
-            {users.map((user) => (
-              <Option
-                key={user._id}
-                value={user._id}
-                label={`${user.name} (${user.email})`}
-              >
-                {user.name} ({user.email})
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
-
-        <CButton type="submit" loading={loading} style={{ width: "100%" }}>
-          {isEditMode ? "Update Team" : "Create Team"}
-        </CButton>
-      </Form>
-    </Card>
+      <CButton
+        onClick={handleSubmit}
+        loading={loading}
+        style={{ width: "100%" }}
+      >
+        {isEditMode ? "Update Team" : "Create Team"}
+      </CButton>
+    </div>
   );
 };
 

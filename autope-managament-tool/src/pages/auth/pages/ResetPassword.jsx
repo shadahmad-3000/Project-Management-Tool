@@ -3,6 +3,7 @@ import { Button, Card, message as antdMessage } from "antd";
 import { EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { userChangePassword } from "../../../utils/UserLogin";
+import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -54,35 +55,63 @@ const ResetPassword = () => {
         </div>
 
         <form onSubmit={handleReset} className="space-y-6">
-          <div className="relative w-full mb-2">
-            <input
-              type={showNewPassword ? "text" : "password"}
-              placeholder="New Password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 bg-gray-50 text-gray-900 
-                 focus:border-purple-500 focus:ring-2 focus:ring-purple-400 h-12 px-3 pr-10"
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              marginBottom: "12px",
+            }}
+          >
+            <FloatingLabelInput
+              label="New Password"
+              inputValue={newPassword}
+              onChangeInputText={(val) =>
+                setNewPassword(typeof val === "string" ? val : val.text)
+              }
+              secureTextEntry={!showNewPassword}
             />
+
             <span
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
               onClick={() => setShowNewPassword(!showNewPassword)}
+              style={{
+                position: "absolute",
+                right: 12,
+                top: "50%",
+                transform: "translateY(-50%)",
+                cursor: "pointer",
+                zIndex: 5,
+              }}
             >
               {showNewPassword ? <EyeTwoTone /> : <EyeInvisibleOutlined />}
             </span>
           </div>
 
-          <div className="relative w-full mb-2">
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 bg-gray-50 text-gray-900 
-                 focus:border-purple-500 focus:ring-2 focus:ring-purple-400 h-12 px-3 pr-10"
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              marginBottom: "12px",
+            }}
+          >
+            <FloatingLabelInput
+              label="Confirm Password"
+              inputValue={confirmPassword}
+              onChangeInputText={(val) =>
+                setConfirmPassword(typeof val === "string" ? val : val.text)
+              }
+              secureTextEntry={!showConfirmPassword}
             />
+
             <span
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              style={{
+                position: "absolute",
+                right: 12,
+                top: "50%",
+                transform: "translateY(-50%)",
+                cursor: "pointer",
+                zIndex: 5,
+              }}
             >
               {showConfirmPassword ? <EyeTwoTone /> : <EyeInvisibleOutlined />}
             </span>

@@ -1,15 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  Form,
-  Input,
-  Button,
-  DatePicker,
-  Select,
-  Card,
-  message,
-  Spin,
-} from "antd";
-import {
   createProject,
   updateProject,
   getProjectById,
@@ -19,11 +9,9 @@ import { getTeams } from "../../../utils/team";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import CButton from "../../../components/common/CButton";
-
-const { Option } = Select;
+import FloatingLabelInput from "../../../components/common/FloatingLabelInput";
 
 const AddEditProject = () => {
-  const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(false);
   const [teams, setTeams] = useState([]);
@@ -33,25 +21,27 @@ const AddEditProject = () => {
 
   const isEditMode = location.pathname.includes("edit");
 
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [projectCodeInput, setProjectCodeInput] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [status, setStatus] = useState("");
+  const [priority, setPriority] = useState("");
+  const [assignedTo, setAssignedTo] = useState([]);
+  const [showErrors, setShowErrors] = useState(false);
+
   useEffect(() => {
     const fetchTeams = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) {
-          message.error("No token found, please login.");
-          return;
-        }
-
+        if (!token) return;
         const res = await getTeams(token);
-        console.log("Fetched Teams:", res.data);
-
         setTeams(res.data?.data || []);
       } catch (err) {
-        console.error("Error fetching teams:", err);
-        message.error(err.response?.data?.message || "Failed to fetch teams.");
+        console.error("Failed to fetch teams", err);
       }
     };
-
     fetchTeams();
   }, []);
 
@@ -64,73 +54,90 @@ const AddEditProject = () => {
           const res = await getProjectById(projectCode, token);
           const project = res.data?.data;
 
-          form.setFieldsValue({
-            ...project,
-            startDate: project.startDate ? dayjs(project.startDate) : null,
-            endDate: project.endDate ? dayjs(project.endDate) : null,
-          });
+          setTitle(project.title || "");
+          setDescription(project.description || "");
+          setProjectCodeInput(project.projectCode || "");
+          setStartDate(
+            project.startDate
+              ? dayjs(project.startDate).format("YYYY-MM-DD")
+              : ""
+          );
+          setEndDate(
+            project.endDate ? dayjs(project.endDate).format("YYYY-MM-DD") : ""
+          );
+          setStatus(project.status || "");
+          setPriority(project.priority || "");
+          setAssignedTo(project.assignedTo || []);
         } catch (err) {
-          message.error("Failed to load project details");
+          console.error("Failed to load project details", err);
         } finally {
           setInitialLoading(false);
         }
       };
       fetchProject();
     }
-  }, [isEditMode, projectCode, form]);
+  }, [isEditMode, projectCode]);
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async () => {
+    if (!title || !projectCodeInput) {
+      setShowErrors(true);
+      return;
+    }
+
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
 
       if (isEditMode) {
         const updateData = {
-          ...(values.title && { title: values.title }),
-          ...(values.description && { description: values.description }),
-          ...(values.startDate && {
-            startDate: values.startDate.toISOString(),
-          }),
-          ...(values.endDate && { endDate: values.endDate.toISOString() }),
-          ...(values.status && { status: values.status }),
-          ...(values.priority && { priority: values.priority }),
+          ...(title && { title }),
+          ...(description && { description }),
+          ...(startDate && { startDate }),
+          ...(endDate && { endDate }),
+          ...(status && { status }),
+          ...(priority && { priority }),
+          ...(assignedTo.length && { assignedTo }),
         };
 
         const payload = { projectCode, update: updateData };
         await updateProject(payload, token);
-        message.success("Project updated successfully!");
+        alert("Project updated successfully!");
       } else {
         const payload = {
-          title: values.title,
-          description: values.description || "",
-          projectCode: values.projectCode,
-          startDate: values.startDate
-            ? dayjs(values.startDate).format("YYYY-MM-DD")
-            : null,
-          endDate: values.endDate
-            ? dayjs(values.endDate).format("YYYY-MM-DD")
-            : null,
-          status: values.status || "Not Started",
-          priority: values.priority || "Medium",
+          title,
+          description,
+          projectCode: projectCodeInput,
+          startDate: startDate || null,
+          endDate: endDate || null,
+          status: status || "Not Started",
+          priority: priority || "Medium",
+          assignedTo,
           createdBy: localStorage.getItem("userId"),
         };
         await createProject(payload, token);
-        message.success("Project created successfully!");
+        alert("Project created successfully!");
       }
 
       navigate("/home/projects");
     } catch (err) {
-      console.error("Project save failed:", err.response || err);
-      message.error(err.response?.data?.message || "Failed to save project");
+      console.error("Save failed:", err);
+      alert("Failed to save project");
     } finally {
       setLoading(false);
     }
   };
 
-  if (initialLoading) return <Spin size="large" />;
+  if (initialLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center mt-5">
+        <div className="spinner-border text-light" role="status"></div>
+      </div>
+    );
+  }
 
   return (
-    <Card
+    <div
+      className="card p-4"
       style={{
         backgroundColor: "#141414",
         color: "#f5f5f5",
@@ -138,90 +145,122 @@ const AddEditProject = () => {
       }}
     >
       <CButton onClick={() => navigate(-1)} variant="text">
-        <ArrowLeftOutlined style={{ marginRight: 6 }} />
-        Back
+        <ArrowLeftOutlined style={{ marginRight: 6 }} /> Back
       </CButton>
 
-      <h2>{isEditMode ? "Edit Project" : "Create Project"}</h2>
-      <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <Form.Item
-          label="Title"
-          name="title"
-          rules={[{ required: true, message: "Title is required" }]}
+      <h2 className="my-3">{isEditMode ? "Edit Project" : "Create Project"}</h2>
+
+      <FloatingLabelInput
+        label="Title"
+        inputValue={title}
+        onChangeInputText={(val) =>
+          setTitle(typeof val === "string" ? val : val.text)
+        }
+      />
+      {!title && showErrors && <p className="text-danger">Title is required</p>}
+
+      <FloatingLabelInput
+        label="Description"
+        inputValue={description}
+        onChangeInputText={(val) =>
+          setDescription(typeof val === "string" ? val : val.text)
+        }
+      />
+
+      <FloatingLabelInput
+        label="Project Code"
+        inputValue={projectCodeInput}
+        onChangeInputText={(val) =>
+          setProjectCodeInput(typeof val === "string" ? val : val.text)
+        }
+      />
+      {!projectCodeInput && showErrors && (
+        <p className="text-danger">Code is required</p>
+      )}
+
+      <div className="row my-3">
+        <div className="col">
+          <label className="form-label">Start Date</label>
+          <input
+            type="date"
+            className="form-control"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+        </div>
+        <div className="col">
+          <label className="form-label">End Date</label>
+          <input
+            type="date"
+            className="form-control"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="mb-3">
+        <label className="form-label">Status</label>
+        <select
+          className="form-select"
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
         >
-          <Input placeholder="Enter project title" />
-        </Form.Item>
+          <option value="">Select status</option>
+          <option value="Not Started">Not Started</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Completed">Completed</option>
+          <option value="On Hold">On Hold</option>
+        </select>
+      </div>
 
-        <Form.Item label="Description" name="description">
-          <Input.TextArea rows={4} placeholder="Enter project description" />
-        </Form.Item>
-
-        <Form.Item
-          label="Project Code"
-          name="projectCode"
-          rules={[{ required: true, message: "Code is required" }]}
+      <div className="mb-3">
+        <label className="form-label">Priority</label>
+        <select
+          className="form-select"
+          value={priority}
+          onChange={(e) => setPriority(e.target.value)}
         >
-          <Input placeholder="Unique project code" />
-        </Form.Item>
+          <option value="">Select priority</option>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+      </div>
 
-        <Form.Item
-          label="Start Date"
-          name="startDate"
-          rules={[{ required: true, message: "Start date is required" }]}
+      {/* Teams */}
+      <div className="mb-3">
+        <label className="form-label">Assign To Team</label>
+        <select
+          multiple
+          className="form-select"
+          value={assignedTo}
+          onChange={(e) =>
+            setAssignedTo(
+              Array.from(e.target.selectedOptions, (opt) => opt.value)
+            )
+          }
         >
-          <DatePicker format="YYYY-MM-DD" />
-        </Form.Item>
+          {teams.length > 0 ? (
+            teams.map((team) => (
+              <option key={team._id} value={team._id}>
+                {team.name} ({team.teamCode})
+              </option>
+            ))
+          ) : (
+            <option disabled>No teams available</option>
+          )}
+        </select>
+      </div>
 
-        <Form.Item
-          label="End Date"
-          name="endDate"
-          rules={[{ required: true, message: "End date is required" }]}
-        >
-          <DatePicker format="YYYY-MM-DD" />
-        </Form.Item>
-
-        <Form.Item label="Status" name="status">
-          <Select placeholder="Select status">
-            <Option value="Not Started">Not Started</Option>
-            <Option value="In Progress">In Progress</Option>
-            <Option value="Completed">Completed</Option>
-            <Option value="On Hold">On Hold</Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item label="Priority" name="priority">
-          <Select placeholder="Select priority">
-            <Option value="Low">Low</Option>
-            <Option value="Medium">Medium</Option>
-            <Option value="High">High</Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item
-          label="Assign To Team"
-          name="assignedTo"
-          rules={[
-            { required: true, message: "Please assign to at least one team" },
-          ]}
-        >
-          <Select mode="multiple" placeholder="Select one or more teams">
-            {teams.length > 0 ? (
-              teams.map((team) => (
-                <Option key={team._id} value={team._id}>
-                  {team.name} ({team.teamCode})
-                </Option>
-              ))
-            ) : (
-              <Option disabled>No teams available</Option>
-            )}
-          </Select>
-        </Form.Item>
-
-        <CButton type="submit" loading={loading} style={{ width: "100%" }}>
-          {isEditMode ? "Update Project" : "Create Project"}
-        </CButton>
-      </Form>
-    </Card>
+      <CButton
+        onClick={handleSubmit}
+        loading={loading}
+        style={{ width: "100%" }}
+      >
+        {isEditMode ? "Update Project" : "Create Project"}
+      </CButton>
+    </div>
   );
 };
 

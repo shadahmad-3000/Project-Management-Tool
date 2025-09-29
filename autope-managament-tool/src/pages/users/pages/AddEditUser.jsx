@@ -1,19 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Card, message, Spin } from "antd";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { getUserById, updateUser } from "../../../utils/User";
 import { addUsers } from "../../../utils/superAdmin";
 import CButton from "../../../components/common/CButton";
+import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
 
 const AddEditUser = () => {
-  const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(false);
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [empIDInput, setEmpIDInput] = useState("");
+  const [designation, setDesignation] = useState("");
+  const [phoneNo, setPhoneNo] = useState("");
+  const [department, setDepartment] = useState("");
+  const [showErrors, setShowErrors] = useState(false);
+
   const navigate = useNavigate();
   const { empID } = useParams();
   const location = useLocation();
-
   const isEditMode = location.pathname.includes("edit");
 
   useEffect(() => {
@@ -23,58 +31,85 @@ const AddEditUser = () => {
         try {
           const token = localStorage.getItem("token");
           if (!token) {
-            message.error("No token found. Please log in again.");
+            alert("No token found. Please log in again.");
             return;
           }
           const res = await getUserById(empID, token);
           if (res.data?.data) {
-            form.setFieldsValue(res.data.data);
+            const user = res.data.data;
+            setName(user.name || "");
+            setEmail(user.email || "");
+            setEmpIDInput(user.empID || "");
+            setDesignation(user.designation || "");
+            setPhoneNo(user.phoneNo || "");
+            setDepartment(user.department || "");
           }
         } catch (err) {
           console.error("Error fetching user:", err);
-          message.error(err.response?.data?.message || "Failed to fetch user");
+          alert("Failed to fetch user");
         } finally {
           setInitialLoading(false);
         }
       };
       fetchUser();
     }
-  }, [empID, isEditMode, form]);
+  }, [isEditMode, empID]);
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async () => {
+    if (!name || !email || (!isEditMode && !password) || !empIDInput) {
+      setShowErrors(true);
+      return;
+    }
+
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        message.error("No token found. Please log in again.");
+        alert("No token found. Please log in again.");
         return;
       }
 
       if (isEditMode) {
-        const payload = { empID, updateData: values };
-        const res = await updateUser(payload, token);
-        message.success(res.data?.message || "User updated successfully!");
+        const payload = {
+          empID,
+          updateData: { name, email, designation, phoneNo, department },
+        };
+        await updateUser(payload, token);
+        alert("User updated successfully!");
       } else {
-        const res = await addUsers(values, token);
-        message.success(res.data?.message || "User created successfully!");
+        const payload = {
+          name,
+          email,
+          password,
+          empID: empIDInput,
+          designation,
+          phoneNo,
+          department,
+        };
+        await addUsers(payload, token);
+        alert("User created successfully!");
       }
 
-      form.resetFields();
       navigate("/home/users");
     } catch (err) {
-      console.error("User save failed:", err.response || err);
-      message.error(err.response?.data?.message || "Failed to save user");
+      console.error("User save failed:", err);
+      alert("Failed to save user");
     } finally {
       setLoading(false);
     }
   };
 
   if (initialLoading) {
-    return <Spin size="large" />;
+    return (
+      <div className="d-flex justify-content-center align-items-center mt-5">
+        <div className="spinner-border text-light" role="status"></div>
+      </div>
+    );
   }
 
   return (
-    <Card
+    <div
+      className="card p-4"
       style={{
         backgroundColor: "#141414",
         color: "#f5f5f5",
@@ -85,63 +120,88 @@ const AddEditUser = () => {
         <ArrowLeftOutlined style={{ marginRight: 6 }} />
         Back
       </CButton>
-      <h2>{isEditMode ? "Edit User" : "Add New User"}</h2>
 
-      <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <Form.Item
-          label="Name"
-          name="name"
-          rules={[{ required: true, message: "Name is required" }]}
-        >
-          <Input placeholder="Enter full name" />
-        </Form.Item>
+      <h2 className="my-3">{isEditMode ? "Edit User" : "Add New User"}</h2>
 
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[
-            { required: true, message: "Email is required" },
-            { type: "email", message: "Enter a valid email" },
-          ]}
-        >
-          <Input placeholder="Enter email address" />
-        </Form.Item>
+      <FloatingLabelInput
+        label="Name"
+        inputValue={name}
+        onChangeInputText={(val) =>
+          setName(typeof val === "string" ? val : val.text)
+        }
+      />
+      {!name && showErrors && <p className="text-danger">Name is required</p>}
 
-        {!isEditMode && (
-          <Form.Item
+      <FloatingLabelInput
+        label="Email"
+        inputValue={email}
+        onChangeInputText={(val) =>
+          setEmail(typeof val === "string" ? val : val.text)
+        }
+      />
+      {!email && showErrors && <p className="text-danger">Email is required</p>}
+
+      {!isEditMode && (
+        <>
+          <FloatingLabelInput
             label="Password"
-            name="password"
-            rules={[{ required: true, message: "Password is required" }]}
-          >
-            <Input.Password placeholder="Enter password" />
-          </Form.Item>
-        )}
+            inputValue={password}
+            secureTextEntry
+            onChangeInputText={(val) =>
+              setPassword(typeof val === "string" ? val : val.text)
+            }
+          />
+          {!password && showErrors && (
+            <p className="text-danger">Password is required</p>
+          )}
+        </>
+      )}
 
-        <Form.Item
-          label="Employee ID"
-          name="empID"
-          rules={[{ required: true, message: "Employee ID is required" }]}
-        >
-          <Input placeholder="Enter employee ID" disabled={isEditMode} />
-        </Form.Item>
+      <FloatingLabelInput
+        label="Employee ID"
+        inputValue={empIDInput}
+        disabled={isEditMode}
+        onChangeInputText={(val) =>
+          setEmpIDInput(typeof val === "string" ? val : val.text)
+        }
+      />
+      {!empIDInput && showErrors && (
+        <p className="text-danger">Employee ID is required</p>
+      )}
 
-        <Form.Item label="Designation" name="designation">
-          <Input placeholder="Enter designation" />
-        </Form.Item>
+      <FloatingLabelInput
+        label="Designation"
+        inputValue={designation}
+        onChangeInputText={(val) =>
+          setDesignation(typeof val === "string" ? val : val.text)
+        }
+      />
 
-        <Form.Item label="Phone Number" name="phoneNo">
-          <Input placeholder="Enter phone number" />
-        </Form.Item>
+      <FloatingLabelInput
+        label="Phone Number"
+        inputValue={phoneNo}
+        keyboardType="number-pad"
+        onChangeInputText={(val) =>
+          setPhoneNo(typeof val === "string" ? val : val.text)
+        }
+      />
 
-        <Form.Item label="Department" name="department">
-          <Input placeholder="Enter department" />
-        </Form.Item>
+      <FloatingLabelInput
+        label="Department"
+        inputValue={department}
+        onChangeInputText={(val) =>
+          setDepartment(typeof val === "string" ? val : val.text)
+        }
+      />
 
-        <CButton type="submit" loading={loading} style={{ width: "100%" }}>
-          {isEditMode ? "Update User" : "Create User"}
-        </CButton>
-      </Form>
-    </Card>
+      <CButton
+        onClick={handleSubmit}
+        loading={loading}
+        style={{ width: "100%" }}
+      >
+        {isEditMode ? "Update User" : "Create User"}
+      </CButton>
+    </div>
   );
 };
 

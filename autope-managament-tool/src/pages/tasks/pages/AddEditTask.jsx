@@ -1,45 +1,44 @@
 import React, { useState, useEffect } from "react";
-import {
-  Form,
-  Input,
-  Select,
-  Card,
-  DatePicker,
-  message as antdMessage,
-  Spin,
-} from "antd";
 import { createTask, getTaskById, updateTask } from "../../../utils/superAdmin";
 import { getTeams } from "../../../utils/team";
-import dayjs from "dayjs";
 import { getUsers } from "../../../utils/User";
+import dayjs from "dayjs";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import CButton from "../../../components/common/CButton";
-
-const { Option } = Select;
-const { RangePicker } = DatePicker;
+import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
 
 const AddEditTask = () => {
-  const [form] = Form.useForm();
   const [teams, setTeams] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(false);
-  const [users, setUsers] = useState([]);
+
   const navigate = useNavigate();
   const { taskId } = useParams();
   const location = useLocation();
-
   const isEditMode = location.pathname.includes("edit");
+
+  const [taskName, setTaskName] = useState("");
+  const [taskCode, setTaskCode] = useState(taskId || "");
+  const [description, setDescription] = useState("");
+  const [assignedTo, setAssignedTo] = useState([]);
+  const [assigneeEmail, setAssigneeEmail] = useState([]);
+  const [taskDeadlineStart, setTaskDeadlineStart] = useState("");
+  const [taskDeadlineEnd, setTaskDeadlineEnd] = useState("");
+  const [taskStatus, setTaskStatus] = useState("");
+  const [taskDuration, setTaskDuration] = useState("");
+  const [taskPriority, setTaskPriority] = useState("");
+  const [showErrors, setShowErrors] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const res = await getUsers();
-        console.log("Fetched Users:", res.data);
         setUsers(res.data?.data || []);
       } catch (err) {
         console.error("Error fetching users:", err);
-        message.error(err.response?.data?.message || "Failed to fetch users");
+        alert("Failed to fetch users");
       }
     };
     fetchUsers();
@@ -49,23 +48,14 @@ const AddEditTask = () => {
     const fetchTeams = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) {
-          antdMessage.error("No token found, please login.");
-          return;
-        }
-
+        if (!token) return;
         const res = await getTeams(token);
-        console.log("Fetched Teams:", res.data);
-
         setTeams(res.data?.data || []);
       } catch (err) {
         console.error("Error fetching teams:", err);
-        antdMessage.error(
-          err.response?.data?.message || "Failed to fetch teams."
-        );
+        alert("Failed to fetch teams");
       }
     };
-
     fetchTeams();
   }, []);
 
@@ -78,66 +68,88 @@ const AddEditTask = () => {
           const res = await getTaskById(taskId, token);
           const task = res.data?.data;
 
-          form.setFieldsValue({
-            ...task,
-            taskDeadline: task.taskDeadline
-              ? [
-                  dayjs(task.taskDeadline.startDate),
-                  dayjs(task.taskDeadline.endDate),
-                ]
-              : [],
-          });
+          setTaskName(task.taskName || "");
+          setTaskCode(task.taskId || "");
+          setDescription(task.description || "");
+          setAssignedTo(task.assignedTo || []);
+          setAssigneeEmail(task.assigneeEmail || []);
+          setTaskDeadlineStart(
+            task.taskDeadline?.startDate
+              ? dayjs(task.taskDeadline.startDate).format("YYYY-MM-DDTHH:mm")
+              : ""
+          );
+          setTaskDeadlineEnd(
+            task.taskDeadline?.endDate
+              ? dayjs(task.taskDeadline.endDate).format("YYYY-MM-DDTHH:mm")
+              : ""
+          );
+          setTaskStatus(task.taskStatus || "");
+          setTaskDuration(task.taskDuration || "");
+          setTaskPriority(task.taskPriority || "");
         } catch (err) {
-          antdMessage.error("Failed to load task details");
+          alert("Failed to load task details");
         } finally {
           setInitialLoading(false);
         }
       };
       fetchTask();
     }
-  }, [isEditMode, taskId, form]);
+  }, [isEditMode, taskId]);
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async () => {
+    if (!taskName || !taskCode || !description || !taskDuration) {
+      setShowErrors(true);
+      return;
+    }
+
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-
       const payload = {
-        ...values,
-        assignedBy: localStorage.getItem("userId"),
-        assignedTo: values.assignedTo || [],
-        assigneeEmail: values.assigneeEmail || [],
+        taskName,
+        taskId: taskCode,
+        description,
+        assignedTo,
+        assigneeEmail,
         taskDeadline: {
-          startDate: values.taskDeadline
-            ? dayjs(values.taskDeadline[0]).format("YYYY-MM-DD HH:mm")
-            : null,
-          endDate: values.taskDeadline
-            ? dayjs(values.taskDeadline[1]).format("YYYY-MM-DD HH:mm")
-            : null,
+          startDate: taskDeadlineStart || null,
+          endDate: taskDeadlineEnd || null,
         },
+        taskStatus,
+        taskDuration,
+        taskPriority,
+        assignedBy: localStorage.getItem("userId"),
       };
 
       if (isEditMode) {
-        const { taskId, ...rest } = payload;
-        await updateTask({ taskId, updateTask: rest }, token);
-        antdMessage.success("Task updated successfully!");
+        const { taskId: code, ...rest } = payload;
+        await updateTask({ taskId: code, updateTask: rest }, token);
+        alert("Task updated successfully!");
       } else {
         await createTask(payload, token);
-        antdMessage.success("Task created successfully!");
+        alert("Task created successfully!");
       }
 
       navigate("/home/tasks");
     } catch (err) {
-      antdMessage.error(err.response?.data?.message || "Failed to save task.");
+      console.error("Save failed:", err);
+      alert("Failed to save task");
     } finally {
       setLoading(false);
     }
   };
 
-  if (initialLoading) return <Spin size="large" />;
+  if (initialLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center mt-5">
+        <div className="spinner-border text-light" role="status"></div>
+      </div>
+    );
+  }
 
   return (
-    <Card
+    <div
+      className="card p-4"
       style={{
         backgroundColor: "#1f1f1f",
         color: "#f5f5f5",
@@ -145,126 +157,160 @@ const AddEditTask = () => {
       }}
     >
       <CButton onClick={() => navigate(-1)} variant="text">
-        <ArrowLeftOutlined style={{ marginRight: 6 }} />
-        Back
+        <ArrowLeftOutlined style={{ marginRight: 6 }} /> Back
       </CButton>
 
-      <h2>{isEditMode ? "Edit Task" : "Create Task"}</h2>
+      <h2 className="my-3">{isEditMode ? "Edit Task" : "Create Task"}</h2>
 
-      <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <Form.Item
-          label="Task Name"
-          name="taskName"
-          rules={[{ required: true, message: "Task name is required" }]}
+      <FloatingLabelInput
+        label="Task Name"
+        inputValue={taskName}
+        onChangeInputText={(val) =>
+          setTaskName(typeof val === "string" ? val : val.text)
+        }
+      />
+      {!taskName && showErrors && (
+        <p className="text-danger">Task name is required</p>
+      )}
+
+      <FloatingLabelInput
+        label="Task ID"
+        inputValue={taskCode}
+        disabled={isEditMode}
+        onChangeInputText={(val) =>
+          setTaskCode(typeof val === "string" ? val : val.text)
+        }
+      />
+      {!taskCode && showErrors && (
+        <p className="text-danger">Task ID is required</p>
+      )}
+
+      <FloatingLabelInput
+        label="Description"
+        inputValue={description}
+        onChangeInputText={(val) =>
+          setDescription(typeof val === "string" ? val : val.text)
+        }
+      />
+      {!description && showErrors && (
+        <p className="text-danger">Description is required</p>
+      )}
+
+      <div className="mb-3">
+        <label className="form-label">Assign To Team</label>
+        <select
+          multiple
+          className="form-select"
+          value={assignedTo}
+          onChange={(e) =>
+            setAssignedTo(
+              Array.from(e.target.selectedOptions, (opt) => opt.value)
+            )
+          }
         >
-          <Input placeholder="Enter task name" />
-        </Form.Item>
+          {teams.length > 0 ? (
+            teams.map((team) => (
+              <option key={team._id} value={team._id}>
+                {team.name} ({team.teamCode})
+              </option>
+            ))
+          ) : (
+            <option disabled>No teams available</option>
+          )}
+        </select>
+      </div>
 
-        <Form.Item
-          label="Task ID"
-          name="taskId"
-          rules={[{ required: true, message: "Task ID is required" }]}
+      <div className="mb-3">
+        <label className="form-label">Assignee Emails</label>
+        <select
+          multiple
+          className="form-select"
+          value={assigneeEmail}
+          onChange={(e) =>
+            setAssigneeEmail(
+              Array.from(e.target.selectedOptions, (opt) => opt.value)
+            )
+          }
         >
-          <Input placeholder="Unique task ID" disabled={isEditMode} />
-        </Form.Item>
+          {users.map((user) => (
+            <option key={user.email} value={user.email}>
+              {user.name} ({user.email})
+            </option>
+          ))}
+        </select>
+      </div>
 
-        <Form.Item
-          label="Description"
-          name="description"
-          rules={[{ required: true, message: "Description is required" }]}
+      <div className="row my-3">
+        <div className="col">
+          <label className="form-label">Start Date</label>
+          <input
+            type="datetime-local"
+            className="form-control"
+            value={taskDeadlineStart}
+            onChange={(e) => setTaskDeadlineStart(e.target.value)}
+          />
+        </div>
+        <div className="col">
+          <label className="form-label">End Date</label>
+          <input
+            type="datetime-local"
+            className="form-control"
+            value={taskDeadlineEnd}
+            onChange={(e) => setTaskDeadlineEnd(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="mb-3">
+        <label className="form-label">Task Status</label>
+        <select
+          className="form-select"
+          value={taskStatus}
+          onChange={(e) => setTaskStatus(e.target.value)}
         >
-          <Input.TextArea rows={3} placeholder="Enter task description" />
-        </Form.Item>
+          <option value="">Select status</option>
+          <option value="Not Started">Not Started</option>
+          <option value="Pending">Pending</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Completed">Completed</option>
+          <option value="On Hold">On Hold</option>
+        </select>
+      </div>
 
-        <Form.Item
-          label="Assign To Team"
-          name="assignedTo"
-          rules={[{ required: true, message: "Please assign a team" }]}
+      <FloatingLabelInput
+        label="Duration (in hours)"
+        inputValue={taskDuration}
+        keyboardType="number-pad"
+        onChangeInputText={(val) =>
+          setTaskDuration(typeof val === "string" ? val : val.text)
+        }
+      />
+      {!taskDuration && showErrors && (
+        <p className="text-danger">Task duration is required</p>
+      )}
+
+      <div className="mb-3">
+        <label className="form-label">Priority</label>
+        <select
+          className="form-select"
+          value={taskPriority}
+          onChange={(e) => setTaskPriority(e.target.value)}
         >
-          <Select placeholder="Select a team" mode="multiple">
-            {teams.length > 0 ? (
-              teams.map((team) => (
-                <Option key={team._id} value={team._id}>
-                  {team.name} ({team.teamCode})
-                </Option>
-              ))
-            ) : (
-              <Option disabled>No teams available</Option>
-            )}
-          </Select>
-        </Form.Item>
+          <option value="">Select priority</option>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+      </div>
 
-        <Form.Item
-          label="Assignee Emails"
-          name="assigneeEmail"
-          rules={[
-            { required: true, message: "At least one assignee is required" },
-          ]}
-        >
-          <Select
-            mode="multiple"
-            placeholder="Select assignees"
-            optionLabelProp="label"
-          >
-            {users.map((user) => (
-              <Option
-                key={user.email}
-                value={user.email}
-                label={`${user.name} (${user.email})`}
-              >
-                {user.name} ({user.email})
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
-
-        <Form.Item
-          label="Task Deadline"
-          name="taskDeadline"
-          rules={[{ required: true, message: "Deadline is required" }]}
-        >
-          <RangePicker showTime format="YYYY-MM-DD HH:mm" />
-        </Form.Item>
-
-        <Form.Item
-          label="Task Status"
-          name="taskStatus"
-          rules={[{ required: true, message: "Please select task status" }]}
-        >
-          <Select placeholder="Select status">
-            <Option value="Not Started">Not Started</Option>
-            <Option value="Pending">Pending</Option>
-            <Option value="In Progress">In Progress</Option>
-            <Option value="Completed">Completed</Option>
-            <Option value="On Hold">On Hold</Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item
-          label="Duration (in hours)"
-          name="taskduration"
-          rules={[{ required: true, message: "Task duration is required" }]}
-        >
-          <Input type="number" placeholder="Enter duration" />
-        </Form.Item>
-
-        <Form.Item
-          label="Priority"
-          name="taskPriority"
-          rules={[{ required: true, message: "Please select task priority" }]}
-        >
-          <Select placeholder="Select priority">
-            <Option value="Low">Low</Option>
-            <Option value="Medium">Medium</Option>
-            <Option value="High">High</Option>
-          </Select>
-        </Form.Item>
-
-        <CButton type="submit" loading={loading} style={{ width: "100%" }}>
-          {isEditMode ? "Update Task" : "Create Task"}
-        </CButton>
-      </Form>
-    </Card>
+      <CButton
+        onClick={handleSubmit}
+        loading={loading}
+        style={{ width: "100%" }}
+      >
+        {isEditMode ? "Update Task" : "Create Task"}
+      </CButton>
+    </div>
   );
 };
 
