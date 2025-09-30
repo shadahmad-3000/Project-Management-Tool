@@ -7,7 +7,8 @@ import FloatingLabelInput from "../../../components/common/InputText/FloatingLab
 const VerifyOtp = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const email = location.state?.email || "";
+  const email =
+    location.state?.email || localStorage.getItem("resetEmail") || "";
   const [otp, setOtp] = useState("");
   const [timer, setTimer] = useState(300);
 
@@ -21,12 +22,17 @@ const VerifyOtp = () => {
 
   const handleVerifyOtp = async () => {
     try {
-      const res = await userVerifyOtp(email, otp);
-      alert(res.data.message || "OTP verified!");
-      navigate("/signin", { replace: true });
+      if (!email) {
+        alert("Email missing. Please restart password reset flow.");
+        return;
+      }
+
+      const res = await userVerifyOtp({ email, otp });
+      alert(res.data?.message || "OTP verified successfully!");
+
+      navigate("/change-password", { replace: true }); // ✅ Go to ChangePassword.jsx
     } catch (err) {
-      console.error("Verify OTP error:", err);
-      alert(err.response?.data?.message || "OTP verification failed.");
+      alert(err.response?.data?.message || "Invalid OTP");
     }
   };
 
@@ -36,47 +42,30 @@ const VerifyOtp = () => {
       alert(res.data.message || "OTP resent!");
       setTimer(300);
     } catch (err) {
-      console.error("Resend OTP error:", err);
       alert(err.response?.data?.message || "Failed to resend OTP.");
     }
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center min-vh-100">
-      <div
-        className="card shadow p-4"
-        style={{
-          width: "400px",
-          backgroundColor: "#1f1f1f",
-          color: "#f5f5f5",
-          borderRadius: "10px",
-        }}
-      >
-        <h2 className="mb-3 text-white">Verify OTP</h2>
-
-        <p className="mb-4">
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2 className="auth-title">Verify OTP</h2>
+        <p className="auth-subtitle">
           We sent an OTP to <b>{email}</b>. Enter it below to verify your
           account.
         </p>
 
-        <div className="mb-3">
+        <div className="form-group">
           <FloatingLabelInput
             label="Enter OTP"
             inputValue={otp}
             onChangeInputText={(val) =>
               setOtp(typeof val === "string" ? val : val.text)
             }
-            inputStyle={{
-              backgroundColor: "#1f1f1f",
-              color: "#f5f5f5",
-            }}
-            containerStyle={{
-              border: "1px solid #333",
-            }}
           />
         </div>
 
-        <div className="mb-3">
+        <div className="form-group">
           <CButton onClick={handleVerifyOtp} style={{ width: "100%" }}>
             Verify OTP
           </CButton>

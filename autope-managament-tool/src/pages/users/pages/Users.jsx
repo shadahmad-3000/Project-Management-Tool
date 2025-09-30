@@ -100,12 +100,12 @@ const UsersPage = () => {
           <thead>
             <tr>
               <th>User Name</th>
-              <th>Employee ID</th>
+              {/* <th>Employee ID</th> */}
               <th>Email</th>
-              <th>Designation</th>
+              {/* <th>Designation</th> */}
               <th>Phone Number</th>
-              <th>OTP Verification</th>
-              <th>Approval Status</th>
+              {/* <th>OTP Verification</th>
+              <th>Approval Status</th> */}
               <th>Role</th>
               {(userRole === "Super-Admin" || userRole === "Admin") && (
                 <th>Action</th>
@@ -125,11 +125,11 @@ const UsersPage = () => {
                 return (
                   <tr key={user._id}>
                     <td>{user.name}</td>
-                    <td>{user.empID}</td>
+                    {/* <td>{user.empID}</td> */}
                     <td>{user.email}</td>
-                    <td>{user.designation}</td>
+                    {/* <td>{user.designation}</td> */}
                     <td>{user.phoneNo}</td>
-                    <td>
+                    {/* <td>
                       {user.isVerified ? (
                         <span className="badge badge-success">Verified</span>
                       ) : (
@@ -142,7 +142,7 @@ const UsersPage = () => {
                       ) : (
                         <span className="badge badge-warning">Pending</span>
                       )}
-                    </td>
+                    </td> */}
                     <td>{user.role}</td>
                     {(userRole === "Super-Admin" || userRole === "Admin") && (
                       <td>

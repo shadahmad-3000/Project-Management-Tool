@@ -33,7 +33,7 @@ const Signin = () => {
       alert(backendMessage);
 
       if (res.data.forcePasswordChange) {
-        navigate("/reset-password", {
+        navigate("/change-password", {
           replace: true,
           state: { oldPassword: credentials.password },
         });

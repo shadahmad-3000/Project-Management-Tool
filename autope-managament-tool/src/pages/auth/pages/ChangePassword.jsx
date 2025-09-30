@@ -1,27 +1,23 @@
 import React, { useState } from "react";
-import { resetPassword } from "../../../utils/UserLogin";
+import { EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
+import { useNavigate, useLocation } from "react-router-dom";
+import { userChangePassword } from "../../../utils/UserLogin";
 import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
 import CButton from "../../../components/common/CButton";
-import { EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
 
-const ResetPassword = () => {
+const ChangePassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const email = localStorage.getItem("resetEmail");
-
-  const handleSubmit = async (e) => {
+  const handleReset = async (e) => {
     e.preventDefault();
 
-    if (!newPassword || !confirmPassword) {
-      alert("All fields are required");
-      return;
-    }
     if (newPassword !== confirmPassword) {
       alert("Passwords do not match");
       return;
@@ -29,10 +25,14 @@ const ResetPassword = () => {
 
     setLoading(true);
     try {
-      await resetPassword({ email, newPassword });
-      alert("Password reset successfully!");
-      localStorage.removeItem("resetEmail");
-      navigate("/signin");
+      const email = localStorage.getItem("userEmail");
+      const oldPassword = location.state?.oldPassword;
+
+      await userChangePassword({ email, newPassword, oldPassword });
+
+      alert("Password updated successfully! Please login again.");
+      localStorage.removeItem("token");
+      navigate("/signin", { replace: true });
     } catch (err) {
       alert(err.response?.data?.message || "Failed to reset password");
     } finally {
@@ -43,10 +43,14 @@ const ResetPassword = () => {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h2 className="auth-title">Set New Password</h2>
-        <p className="auth-subtitle">Enter your new password to continue</p>
+        <div className="text-center mb-4">
+          <h2 className="auth-title">Set Your Password</h2>
+          <p className="auth-subtitle">
+            Please create a new password to continue
+          </p>
+        </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleReset}>
           <div className="form-group position-relative">
             <FloatingLabelInput
               label="New Password"
@@ -82,7 +86,7 @@ const ResetPassword = () => {
           </div>
 
           <CButton type="submit" loading={loading} style={{ width: "100%" }}>
-            Change Password
+            Reset Password
           </CButton>
         </form>
       </div>
@@ -90,4 +94,4 @@ const ResetPassword = () => {
   );
 };
 
-export default ResetPassword;
+export default ChangePassword;

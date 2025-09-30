@@ -15,8 +15,10 @@ import UsersPage from "../pages/users/pages/Users";
 import AddEditUser from "../pages/users/pages/AddEditUser";
 import AddEditProject from "../pages/projects/pages/AddEditProject";
 import AddEditTask from "../pages/tasks/pages/AddEditTask";
-import ResetPassword from "../pages/auth/pages/ResetPassword";
+import ChangePassword from "../pages/auth/pages/ChangePassword";
 import Navbar from "../components/layout/Navbar";
+import ForgotPassword from "../pages/auth/pages/ForgetPassword";
+import ResetPassword from "../pages/auth/pages/ResetPassword";
 
 const AppRoutes = () => {
   return (
@@ -29,6 +31,8 @@ const AppRoutes = () => {
 
           <Route path="/signin" element={<Signin />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
+          <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
           <Route element={<DashboardLayout />}>

@@ -4,7 +4,7 @@ const API = axios.create({
   baseURL: "http://localhost:3000/auth",
 });
 
-export const userSignup = (userData) => API.post("/sign-up", userData);
+// export const userSignup = (userData) => API.post("/sign-up", userData);
 
 export const userSignin = (credentials) => API.post("/sign-in", credentials);
 
@@ -20,4 +20,12 @@ export const userLogout = async (token, email) => {
 
 export const userChangePassword = (payload) => {
   return API.post("/change-password", payload);
+};
+
+export const forgetPassword = (body) => {
+  return API.post("/forget-password", body);
+};
+
+export const resetPassword = (body) => {
+  return API.post("/reset-password", body);
 };
