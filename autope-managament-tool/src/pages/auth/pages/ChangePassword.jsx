@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router-dom";
-import { userChangePassword } from "../../../utils/UserLogin";
 import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
 import CButton from "../../../components/common/CButton";
+import { useDispatch } from "react-redux";
+import { changePassword } from "../../../store/slices/authSlice";
 
 const ChangePassword = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -14,8 +15,9 @@ const ChangePassword = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
-  const handleReset = async (e) => {
+  function handleReset(e) {
     e.preventDefault();
 
     if (newPassword !== confirmPassword) {
@@ -24,21 +26,24 @@ const ChangePassword = () => {
     }
 
     setLoading(true);
-    try {
-      const email = localStorage.getItem("userEmail");
-      const oldPassword = location.state?.oldPassword;
 
-      await userChangePassword({ email, newPassword, oldPassword });
+    const email = localStorage.getItem("userEmail");
+    const oldPassword = location.state?.oldPassword;
 
-      alert("Password updated successfully! Please login again.");
-      localStorage.removeItem("token");
-      navigate("/signin", { replace: true });
-    } catch (err) {
-      alert(err.response?.data?.message || "Failed to reset password");
-    } finally {
-      setLoading(false);
-    }
-  };
+    dispatch(changePassword({ email, newPassword, oldPassword }))
+      .unwrap()
+      .then(() => {
+        alert("Password updated successfully! Please login again.");
+        localStorage.removeItem("token");
+        navigate("/signin", { replace: true });
+      })
+      .catch((err) => {
+        alert(err || "Failed to reset password");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
 
   return (
     <div className="auth-container">

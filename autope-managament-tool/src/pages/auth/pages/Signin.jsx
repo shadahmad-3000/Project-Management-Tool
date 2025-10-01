@@ -1,16 +1,18 @@
 import React, { useState } from "react";
-import { userSignin } from "../../../utils/UserLogin";
-import { userSendOtp } from "../../../utils/OtpVerification";
 import { Link, useNavigate } from "react-router-dom";
 import { EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
 import CButton from "../../../components/common/CButton";
 import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
+import { useDispatch } from "react-redux";
+import { signin } from "../../../store/slices/authSlice";
+import { sendOtp } from "../../../store/slices/otpSlice";
 
 const Signin = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (field, value) => {
     setCredentials((c) => ({ ...c, [field]: value }));
@@ -19,49 +21,55 @@ const Signin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    try {
-      const res = await userSignin(credentials);
-      const backendMessage = res.data?.message || "Login successful!";
 
-      if (res.data?.token) {
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("userEmail", credentials.email);
-      }
-      if (res.data?.role) localStorage.setItem("userRole", res.data.role);
-      if (res.data?.userId) localStorage.setItem("userId", res.data.userId);
+    dispatch(signin(credentials))
+      .unwrap()
+      .then((response) => {
+        const backendMessage = response?.message || "Login successful!";
 
-      alert(backendMessage);
-
-      if (res.data.forcePasswordChange) {
-        navigate("/change-password", {
-          replace: true,
-          state: { oldPassword: credentials.password },
-        });
-      } else {
-        navigate("/home", { replace: true });
-      }
-    } catch (err) {
-      const errorMsg = err.response?.data?.message || "Signin failed.";
-      if (
-        errorMsg.includes("Please verify your email with OTP") &&
-        credentials.email
-      ) {
-        try {
-          await userSendOtp(credentials.email);
-          alert("We sent you an OTP. Please verify your account.");
-          navigate("/verify-otp", {
-            state: { email: credentials.email },
-            replace: true,
-          });
-        } catch {
-          alert("Failed to send OTP. Please try again.");
+        if (response?.token) {
+          localStorage.setItem("token", response.token);
+          localStorage.setItem("userEmail", credentials.email);
         }
-      } else {
-        alert(errorMsg);
-      }
-    } finally {
-      setLoading(false);
-    }
+        if (response?.role) localStorage.setItem("userRole", response.role);
+        if (response?.userId) localStorage.setItem("userId", response.userId);
+
+        alert(backendMessage);
+
+        if (response.forcePasswordChange) {
+          navigate("/change-password", {
+            replace: true,
+            state: { oldPassword: credentials.password },
+          });
+        } else {
+          navigate("/home", { replace: true });
+        }
+
+        setLoading(false);
+      })
+      .catch(async (err) => {
+        const errorMsg = err || "Signin failed.";
+
+        if (
+          errorMsg.includes("Please verify your email with OTP") &&
+          credentials.email
+        ) {
+          try {
+            await dispatch(sendOtp({ email: credentials.email })).unwrap();
+            alert("We sent you an OTP. Please verify your account.");
+            navigate("/verify-otp", {
+              state: { email: credentials.email },
+              replace: true,
+            });
+          } catch {
+            alert("Failed to send OTP. Please try again.");
+          }
+        } else {
+          alert(errorMsg);
+        }
+
+        setLoading(false);
+      });
   };
 
   return (

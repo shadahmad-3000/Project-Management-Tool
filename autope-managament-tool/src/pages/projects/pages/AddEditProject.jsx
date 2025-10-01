@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import {
-  createProject,
-  updateProject,
-  getProjectById,
-} from "../../../utils/superAdmin";
 import dayjs from "dayjs";
-import { getTeams } from "../../../utils/team";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import CButton from "../../../components/common/CButton";
 import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
+import { useDispatch } from "react-redux";
+import {
+  getProjectById,
+  updateProject,
+  createProject,
+} from "../../../store/slices/SuperAdminSlice";
+import { getTeams } from "../../../store/slices/teamSlice";
 
 const AddEditProject = () => {
   const [loading, setLoading] = useState(false);
@@ -18,6 +19,7 @@ const AddEditProject = () => {
   const navigate = useNavigate();
   const { projectCode } = useParams();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   const isEditMode = location.pathname.includes("edit");
 
@@ -32,28 +34,23 @@ const AddEditProject = () => {
   const [showErrors, setShowErrors] = useState(false);
 
   useEffect(() => {
-    const fetchTeams = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-        const res = await getTeams(token);
-        setTeams(res.data?.data || []);
-      } catch (err) {
-        console.error("Failed to fetch teams", err);
-      }
-    };
-    fetchTeams();
-  }, []);
+    dispatch(getTeams())
+      .unwrap()
+      .then((data) => {
+        setTeams(data || []);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch teams:", err);
+      });
+  }, [dispatch]);
 
   useEffect(() => {
     if (isEditMode && projectCode) {
       setInitialLoading(true);
-      const fetchProject = async () => {
-        try {
-          const token = localStorage.getItem("token");
-          const res = await getProjectById(projectCode, token);
-          const project = res.data?.data;
 
+      dispatch(getProjectById(projectCode))
+        .unwrap()
+        .then((project) => {
           setTitle(project.title || "");
           setDescription(project.description || "");
           setProjectCodeInput(project.projectCode || "");
@@ -68,62 +65,74 @@ const AddEditProject = () => {
           setStatus(project.status || "");
           setPriority(project.priority || "");
           setAssignedTo(project.assignedTo || []);
-        } catch (err) {
-          console.error("Failed to load project details", err);
-        } finally {
+        })
+        .catch((err) => {
+          console.error("Failed to load project details:", err);
+        })
+        .finally(() => {
           setInitialLoading(false);
-        }
-      };
-      fetchProject();
+        });
     }
-  }, [isEditMode, projectCode]);
+  }, [isEditMode, projectCode, dispatch]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!title || !projectCodeInput) {
       setShowErrors(true);
       return;
     }
 
     setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
 
-      if (isEditMode) {
-        const updateData = {
-          ...(title && { title }),
-          ...(description && { description }),
-          ...(startDate && { startDate }),
-          ...(endDate && { endDate }),
-          ...(status && { status }),
-          ...(priority && { priority }),
-          ...(assignedTo.length && { assignedTo }),
-        };
+    if (isEditMode) {
+      const updateData = {
+        ...(title && { title }),
+        ...(description && { description }),
+        ...(startDate && { startDate }),
+        ...(endDate && { endDate }),
+        ...(status && { status }),
+        ...(priority && { priority }),
+        ...(assignedTo.length && { assignedTo }),
+      };
 
-        const payload = { projectCode, update: updateData };
-        await updateProject(payload, token);
-        alert("Project updated successfully!");
-      } else {
-        const payload = {
-          title,
-          description,
-          projectCode: projectCodeInput,
-          startDate: startDate || null,
-          endDate: endDate || null,
-          status: status || "Not Started",
-          priority: priority || "Medium",
-          assignedTo,
-          createdBy: localStorage.getItem("userId"),
-        };
-        await createProject(payload, token);
-        alert("Project created successfully!");
-      }
+      const payload = { projectCode, update: updateData };
 
-      navigate("/home/projects");
-    } catch (err) {
-      console.error("Save failed:", err);
-      alert("Failed to save project");
-    } finally {
-      setLoading(false);
+      dispatch(updateProject(payload))
+        .unwrap()
+        .then(() => {
+          alert("Project updated successfully!");
+          navigate("/home/projects");
+        })
+        .catch(() => {
+          alert("Failed to update project");
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      const payload = {
+        title,
+        description,
+        projectCode: projectCodeInput,
+        startDate: startDate || null,
+        endDate: endDate || null,
+        status: status || "Not Started",
+        priority: priority || "Medium",
+        assignedTo,
+        createdBy: localStorage.getItem("userId"),
+      };
+
+      dispatch(createProject(payload))
+        .unwrap()
+        .then(() => {
+          alert("Project created successfully!");
+          navigate("/home/projects");
+        })
+        .catch(() => {
+          alert("Failed to create project");
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
   };
 

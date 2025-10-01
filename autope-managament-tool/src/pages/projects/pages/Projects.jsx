@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { getProject } from "../../../utils/superAdmin";
 import { useNavigate } from "react-router-dom";
 import CButton from "../../../components/common/CButton";
 import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
 import { EditOutlined } from "@ant-design/icons";
+import { useDispatch } from "react-redux";
+import { getProject } from "../../../store/slices/SuperAdminSlice";
 
 const ProjectsPage = () => {
   const [projects, setProjects] = useState([]);
@@ -11,36 +12,29 @@ const ProjectsPage = () => {
   const [loading, setLoading] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [userRole, setUserRole] = useState(null);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
     setUserRole(role);
 
-    const fetchProjects = async () => {
-      setLoading(true);
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          alert("No token found, please login.");
-          return;
-        }
+    setLoading(true);
 
-        const res = await getProject(token);
-        const data = res.data?.data || [];
-
-        setProjects(data);
-        setFilteredProjects(data);
-      } catch (err) {
+    dispatch(getProject())
+      .unwrap()
+      .then((data) => {
+        setProjects(data || []);
+        setFilteredProjects(data || []);
+      })
+      .catch((err) => {
         console.error("Error fetching projects:", err);
-        alert(err.response?.data?.message || "Failed to fetch projects.");
-      } finally {
+        alert(err || "Failed to fetch projects.");
+      })
+      .finally(() => {
         setLoading(false);
-      }
-    };
-
-    fetchProjects();
-  }, []);
+      });
+  }, [dispatch]);
 
   const handleSearch = (val) => {
     const value = typeof val === "string" ? val : val.text;

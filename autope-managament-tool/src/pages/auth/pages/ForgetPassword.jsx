@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { forgetPassword } from "../../../utils/UserLogin";
 import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
 import CButton from "../../../components/common/CButton";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { forgetPassword } from "../../../utils/UserLogin";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");

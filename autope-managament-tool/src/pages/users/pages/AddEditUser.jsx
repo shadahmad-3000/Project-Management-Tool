@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import { getUserById, updateUser } from "../../../utils/User";
-import { addUsers } from "../../../utils/superAdmin";
 import CButton from "../../../components/common/CButton";
 import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
+import { useDispatch } from "react-redux";
+import { addUsers } from "../../../store/slices/SuperAdminSlice";
+import { getUserById, updateUser } from "../../../store/slices/userSlice";
 
 const AddEditUser = () => {
   const [loading, setLoading] = useState(false);
@@ -22,78 +23,81 @@ const AddEditUser = () => {
   const navigate = useNavigate();
   const { empID } = useParams();
   const location = useLocation();
+  const dispatch = useDispatch();
   const isEditMode = location.pathname.includes("edit");
 
   useEffect(() => {
     if (isEditMode && empID) {
-      const fetchUser = async () => {
-        setInitialLoading(true);
-        try {
-          const token = localStorage.getItem("token");
-          if (!token) {
-            alert("No token found. Please log in again.");
-            return;
-          }
-          const res = await getUserById(empID, token);
-          if (res.data?.data) {
-            const user = res.data.data;
-            setName(user.name || "");
-            setEmail(user.email || "");
-            setEmpIDInput(user.empID || "");
-            setDesignation(user.designation || "");
-            setPhoneNo(user.phoneNo || "");
-            setDepartment(user.department || "");
-          }
-        } catch {
-          alert("Failed to fetch user");
-        } finally {
-          setInitialLoading(false);
-        }
-      };
-      fetchUser();
-    }
-  }, [isEditMode, empID]);
+      setInitialLoading(true);
 
-  const handleSubmit = async () => {
+      dispatch(getUserById(empID))
+        .unwrap()
+        .then((user) => {
+          setName(user.name || "");
+          setEmail(user.email || "");
+          setEmpIDInput(user.empID || "");
+          setDesignation(user.designation || "");
+          setPhoneNo(user.phoneNo || "");
+          setDepartment(user.department || "");
+        })
+        .catch(() => {
+          alert("Failed to fetch user");
+        })
+        .finally(() => {
+          setInitialLoading(false);
+        });
+    }
+  }, [isEditMode, empID, dispatch]);
+
+  const handleSubmit = () => {
     if (!name || !email || (!isEditMode && !password) || !empIDInput) {
       setShowErrors(true);
       return;
     }
 
     setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("No token found. Please log in again.");
-        return;
-      }
 
-      if (isEditMode) {
-        const payload = {
-          empID,
-          updateData: { name, email, designation, phoneNo, department },
-        };
-        await updateUser(payload, token);
-        alert("User updated successfully!");
-      } else {
-        const payload = {
-          name,
-          email,
-          password,
-          empID: empIDInput,
-          designation,
-          phoneNo,
-          department,
-        };
-        await addUsers(payload, token);
-        alert("User created successfully!");
-      }
+    if (isEditMode) {
+      const payload = {
+        empID,
+        updateData: { name, email, designation, phoneNo, department },
+      };
 
-      navigate("/home/users");
-    } catch {
-      alert("Failed to save user");
-    } finally {
-      setLoading(false);
+      dispatch(updateUser(payload))
+        .unwrap()
+        .then(() => {
+          alert("User updated successfully!");
+          navigate("/home/users");
+        })
+        .catch(() => {
+          alert("Failed to update user");
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      const payload = {
+        name,
+        email,
+        password,
+        empID: empIDInput,
+        designation,
+        phoneNo,
+        department,
+      };
+
+      dispatch(addUsers(payload))
+        .unwrap()
+        .then(() => {
+          alert("User created successfully!");
+          navigate("/home/users");
+        })
+        .catch(() => {
+          alert("Failed to create user");
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
   };
 

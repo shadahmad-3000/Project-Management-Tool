@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getTask } from "../../../utils/superAdmin";
 import dayjs from "dayjs";
 import CButton from "../../../components/common/CButton";
 import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
 import { EditOutlined } from "@ant-design/icons";
+import { useDispatch } from "react-redux";
+import { getTask } from "../../../store/slices/SuperAdminSlice";
 
 const TasksPage = () => {
   const [tasks, setTasks] = useState([]);
@@ -13,32 +14,28 @@ const TasksPage = () => {
   const [searchValue, setSearchValue] = useState("");
   const [userRole, setUserRole] = useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
     setUserRole(role);
 
-    const fetchTasks = async () => {
-      setLoading(true);
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          alert("No token found, please login.");
-          return;
-        }
-        const res = await getTask(token);
-        setTasks(res.data?.data || []);
-        setFilteredTasks(res.data?.data || []);
-      } catch (err) {
-        console.error("Error fetching tasks:", err);
-        alert(err.response?.data?.message || "Failed to fetch tasks.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    setLoading(true);
 
-    fetchTasks();
-  }, []);
+    dispatch(getTask())
+      .unwrap()
+      .then((data) => {
+        setTasks(data || []);
+        setFilteredTasks(data || []);
+      })
+      .catch((err) => {
+        console.error("Error fetching tasks:", err);
+        alert(err || "Failed to fetch tasks.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [dispatch]);
 
   const handleSearch = (val) => {
     const value = typeof val === "string" ? val : val.text;

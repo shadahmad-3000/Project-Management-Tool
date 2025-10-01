@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { resetPassword } from "../../../utils/UserLogin";
 import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
 import CButton from "../../../components/common/CButton";
 import { EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { resetPassword } from "../../../utils/UserLogin";
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -12,10 +13,11 @@ const ResetPassword = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const email = localStorage.getItem("resetEmail");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!newPassword || !confirmPassword) {
@@ -28,16 +30,20 @@ const ResetPassword = () => {
     }
 
     setLoading(true);
-    try {
-      await resetPassword({ email, newPassword });
-      alert("Password reset successfully!");
-      localStorage.removeItem("resetEmail");
-      navigate("/signin");
-    } catch (err) {
-      alert(err.response?.data?.message || "Failed to reset password");
-    } finally {
-      setLoading(false);
-    }
+
+    dispatch(resetPassword({ email, newPassword }))
+      .unwrap()
+      .then(() => {
+        alert("Password reset successfully!");
+        localStorage.removeItem("resetEmail");
+        navigate("/signin");
+      })
+      .catch((err) => {
+        alert(err || "Failed to reset password");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (

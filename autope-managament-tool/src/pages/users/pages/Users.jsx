@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { deleteUser, getUsers } from "../../../utils/User";
 import CButton from "../../../components/common/CButton";
 import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { useDispatch } from "react-redux";
+import { deleteUser, getUsers } from "../../../store/slices/userSlice";
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -12,32 +13,28 @@ const UsersPage = () => {
   const [searchValue, setSearchValue] = useState("");
   const [userRole, setUserRole] = useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
     setUserRole(role);
 
-    const fetchUsers = async () => {
-      setLoading(true);
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          alert("No token found, please login.");
-          return;
-        }
-        const res = await getUsers();
-        setUsers(res.data?.data || []);
-        setFilteredUsers(res.data?.data || []);
-      } catch (err) {
-        console.error("Error fetching users:", err);
-        alert(err.response?.data?.message || "Failed to fetch users");
-      } finally {
-        setLoading(false);
-      }
-    };
+    setLoading(true);
 
-    fetchUsers();
-  }, []);
+    dispatch(getUsers())
+      .unwrap()
+      .then((data) => {
+        setUsers(data || []);
+        setFilteredUsers(data || []);
+      })
+      .catch((err) => {
+        console.error("Error fetching users:", err);
+        alert(err || "Failed to fetch users");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [dispatch]);
 
   const handleSearch = (val) => {
     const value = typeof val === "string" ? val : val.text;
@@ -52,25 +49,26 @@ const UsersPage = () => {
     setFilteredUsers(filtered);
   };
 
-  const handleDelete = async (empID, isSuperAdmin) => {
+  const handleDelete = (empID, isSuperAdmin) => {
     if (isSuperAdmin) return;
     if (!window.confirm("Are you sure you want to delete this user?")) return;
 
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("No token found, please login.");
-        return;
-      }
+    setLoading(true);
 
-      const res = await deleteUser(empID, token);
-      alert(res.data?.message || "User deleted successfully!");
-      setUsers((prev) => prev.filter((user) => user.empID !== empID));
-      setFilteredUsers((prev) => prev.filter((user) => user.empID !== empID));
-    } catch (err) {
-      console.error("Delete user failed:", err.response || err);
-      alert(err.response?.data?.message || "Failed to delete user");
-    }
+    dispatch(deleteUser(empID))
+      .unwrap()
+      .then((res) => {
+        alert(res?.data?.message || "User deleted successfully!");
+        setUsers((prev) => prev.filter((user) => user.empID !== empID));
+        setFilteredUsers((prev) => prev.filter((user) => user.empID !== empID));
+      })
+      .catch((err) => {
+        console.error("Delete user failed:", err);
+        alert(err || "Failed to delete user");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -100,12 +98,8 @@ const UsersPage = () => {
           <thead>
             <tr>
               <th>User Name</th>
-              {/* <th>Employee ID</th> */}
               <th>Email</th>
-              {/* <th>Designation</th> */}
               <th>Phone Number</th>
-              {/* <th>OTP Verification</th>
-              <th>Approval Status</th> */}
               <th>Role</th>
               {(userRole === "Super-Admin" || userRole === "Admin") && (
                 <th>Action</th>
@@ -125,24 +119,8 @@ const UsersPage = () => {
                 return (
                   <tr key={user._id}>
                     <td>{user.name}</td>
-                    {/* <td>{user.empID}</td> */}
                     <td>{user.email}</td>
-                    {/* <td>{user.designation}</td> */}
                     <td>{user.phoneNo}</td>
-                    {/* <td>
-                      {user.isVerified ? (
-                        <span className="badge badge-success">Verified</span>
-                      ) : (
-                        <span className="badge badge-danger">Not Verified</span>
-                      )}
-                    </td>
-                    <td>
-                      {user.isApproved ? (
-                        <span className="badge badge-primary">Approved</span>
-                      ) : (
-                        <span className="badge badge-warning">Pending</span>
-                      )}
-                    </td> */}
                     <td>{user.role}</td>
                     {(userRole === "Super-Admin" || userRole === "Admin") && (
                       <td>

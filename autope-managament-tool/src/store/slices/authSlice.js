@@ -2,109 +2,177 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { postRequest } from "../../utils/api";
 // import API_PATHS from "../../utils/apiPaths";
 import { apiPaths } from "../../utils/apiPaths";
-export const sendOtp = createAsyncThunk(
-  "auth/sendOtp",
-  async ({ mobileNumber }, { rejectWithValue }) => {
+import { ACCESS_TOKEN } from "../../utils/constants";
+
+export const signin = createAsyncThunk(
+  "auth/signin",
+  async (credentials, { rejectWithValue }) => {
     try {
-      const response = await postRequest(apiPaths.updateUser, {
-        mobileNumber,
-      });
+      const response = await postRequest(apiPaths.userSignin, credentials);
+      console.log("response", response);
+      console.log("response.data?.token", response.data?.token);
+
+      if (response.data?.token) {
+        localStorage.setItem(ACCESS_TOKEN, response.data.token);
+      }
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Signin failed");
+    }
+  }
+);
+
+export const logout = createAsyncThunk(
+  "auth/logout",
+  async ({ email }, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem(ACCESS_TOKEN);
+      const response = await postRequest(
+        apiPaths.userLogout,
+        { email },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      localStorage.removeItem(ACCESS_TOKEN);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Logout failed");
+    }
+  }
+);
+
+export const changePassword = createAsyncThunk(
+  "auth/changePassword",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await postRequest(apiPaths.userChangePassword, payload);
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to send OTP"
+        error.response?.data?.message || "Change password failed"
       );
     }
   }
 );
 
-// export const verifyOtp = createAsyncThunk(
-//   "auth/verifyOtp",
-//   async ({ mobileNumber, otp }, { rejectWithValue }) => {
-//     try {
-//       const params = {
-//         mobileNumber,
-//         otp: parseInt(otp, 10),
-//         deviceModel: "msite",
-//         lat: 0,
-//         long: 0,
-//       };
-//       const response = await postRequest(API_PATHS.verifyOtp, params);
-//       return response.data;
-//     } catch (error) {
-//       return rejectWithValue(error.response?.data?.message || "Invalid OTP");
-//     }
-//   }
-// );
+export const forgetPassword = createAsyncThunk(
+  "auth/forgetPassword",
+  async (body, { rejectWithValue }) => {
+    try {
+      const response = await postRequest(apiPaths.forgetPassword, body);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Forget password failed"
+      );
+    }
+  }
+);
 
-// export const resendOtp = createAsyncThunk(
-//   "auth/resendOtp",
-//   async ({ mobileNumber }, { rejectWithValue }) => {
-//     try {
-//       const response = await postRequest(API_PATHS.resendOtp, { mobileNumber });
-//       return response.data;
-//     } catch (error) {
-//       return rejectWithValue(
-//         error.response?.data?.message || "Failed to resend OTP"
-//       );
-//     }
-//   }
-// );
+export const resetPassword = createAsyncThunk(
+  "auth/resetPassword",
+  async (body, { rejectWithValue }) => {
+    try {
+      const response = await postRequest(apiPaths.resetPassword, body);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Reset password failed"
+      );
+    }
+  }
+);
 
 const initialState = {
   loading: false,
   error: null,
   isAuthenticated: false,
   user: null,
-  accessToken: null,
+  token: localStorage.getItem(ACCESS_TOKEN) || null,
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    clearError: (state) => {
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
-      // Send OTP
-      .addCase(sendOtp.pending, (state) => {
+      .addCase(signin.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(sendOtp.fulfilled, (state) => {
+      .addCase(signin.fulfilled, (state, action) => {
         state.loading = false;
+        state.isAuthenticated = true;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
       })
-      .addCase(sendOtp.rejected, (state, action) => {
+      .addCase(signin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
-    // // Verify OTP
-    // .addCase(verifyOtp.pending, (state) => {
-    //   state.loading = true;
-    //   state.error = null;
-    // })
-    // .addCase(verifyOtp.fulfilled, (state, action) => {
-    //   state.loading = false;
-    //   state.isAuthenticated = true;
-    //   state.user = action.payload.user;
-    //   state.accessToken = action.payload.accessToken;
-    // })
-    // .addCase(verifyOtp.rejected, (state, action) => {
-    //   state.loading = false;
-    //   state.error = action.payload;
-    // })
-    // // Resend OTP
-    // .addCase(resendOtp.pending, (state) => {
-    //   state.loading = true;
-    //   state.error = null;
-    // })
-    // .addCase(resendOtp.fulfilled, (state) => {
-    //   state.loading = false;
-    // })
-    // .addCase(resendOtp.rejected, (state, action) => {
-    //   state.loading = false;
-    //   state.error = action.payload;
-    // });
+
+    builder
+      .addCase(logout.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.loading = false;
+        state.isAuthenticated = false;
+        state.user = null;
+        state.token = null;
+      })
+      .addCase(logout.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    builder
+      .addCase(changePassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(changePassword.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(changePassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    builder
+      .addCase(forgetPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(forgetPassword.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(forgetPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // 🔹 Reset password
+    builder
+      .addCase(resetPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(resetPassword.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
+
+export const { clearError } = authSlice.actions;
 
 export default authSlice.reducer;

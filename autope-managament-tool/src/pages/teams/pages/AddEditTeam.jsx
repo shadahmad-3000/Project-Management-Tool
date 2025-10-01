@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import { getUsers } from "../../../utils/User";
-import { createTeam, updateTeam, getTeamById } from "../../../utils/team";
+import { useDispatch } from "react-redux";
+import { getUsers } from "../../../store/slices/userSlice";
+import {
+  createTeam,
+  updateTeam,
+  getTeamById,
+} from "../../../store/slices/teamSlice";
 import CButton from "../../../components/common/CButton";
 import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
 
@@ -19,75 +24,78 @@ const AddEditTeam = () => {
   const navigate = useNavigate();
   const { teamCode } = useParams();
   const location = useLocation();
+  const dispatch = useDispatch();
+
   const isEditMode = location.pathname.includes("edit");
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await getUsers(token);
-        setUsers(res.data?.data || []);
-      } catch {
+    dispatch(getUsers())
+      .unwrap()
+      .then((data) => {
+        setUsers(data || []);
+      })
+      .catch(() => {
         alert("Failed to fetch users");
-      }
-    };
-    fetchUsers();
-  }, []);
+      });
+  }, [dispatch]);
 
   useEffect(() => {
     if (isEditMode && teamCode) {
       setInitialLoading(true);
-      const fetchTeam = async () => {
-        try {
-          const token = localStorage.getItem("token");
-          const res = await getTeamById(teamCode, token);
-          const team = res.data?.data;
 
+      dispatch(getTeamById(teamCode))
+        .unwrap()
+        .then((team) => {
           setName(team.name || "");
           setTeamCodeInput(team.teamCode || "");
           setTeamMembers(
             team.teamMembers?.map((m) => (typeof m === "object" ? m._id : m)) ||
               []
           );
-        } catch {
+        })
+        .catch(() => {
           alert("Failed to load team details");
-        } finally {
+        })
+        .finally(() => {
           setInitialLoading(false);
-        }
-      };
-      fetchTeam();
+        });
     }
-  }, [isEditMode, teamCode]);
+  }, [isEditMode, teamCode, dispatch]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!name || !teamCodeInput || teamMembers.length === 0) {
       setShowErrors(true);
       return;
     }
 
     setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-      const payload = {
-        name,
-        teamCode: teamCodeInput,
-        teamMembers,
-      };
 
-      if (isEditMode) {
-        await updateTeam({ teamCode, updateData: payload }, token);
-        alert("Team updated successfully!");
-      } else {
-        await createTeam(payload, token);
-        alert("Team created successfully!");
-      }
+    const payload = {
+      name,
+      teamCode: teamCodeInput,
+      teamMembers,
+    };
 
-      navigate("/home/teams");
-    } catch {
-      alert("Failed to save team");
-    } finally {
-      setLoading(false);
-    }
+    const action = isEditMode
+      ? updateTeam({ teamCode, updateData: payload })
+      : createTeam(payload);
+
+    dispatch(action)
+      .unwrap()
+      .then(() => {
+        alert(
+          isEditMode
+            ? "Team updated successfully!"
+            : "Team created successfully!"
+        );
+        navigate("/home/teams");
+      })
+      .catch(() => {
+        alert("Failed to save team");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   if (initialLoading) {

@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { createTask, getTaskById, updateTask } from "../../../utils/superAdmin";
-import { getTeams } from "../../../utils/team";
-import { getUsers } from "../../../utils/User";
 import dayjs from "dayjs";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import CButton from "../../../components/common/CButton";
 import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
+import { useDispatch } from "react-redux";
+import {
+  getTaskById,
+  updateTask,
+  createTask,
+} from "../../../store/slices/SuperAdminSlice";
+import { getTeams } from "../../../store/slices/teamSlice";
+import { getUsers } from "../../../store/slices/userSlice";
 
 const AddEditTask = () => {
   const [teams, setTeams] = useState([]);
@@ -30,42 +35,29 @@ const AddEditTask = () => {
   const [taskDuration, setTaskDuration] = useState("");
   const [taskPriority, setTaskPriority] = useState("");
   const [showErrors, setShowErrors] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await getUsers();
-        setUsers(res.data?.data || []);
-      } catch {
-        alert("Failed to fetch users");
-      }
-    };
-    fetchUsers();
-  }, []);
+    dispatch(getUsers())
+      .unwrap()
+      .then((data) => setUsers(data || []))
+      .catch(() => alert("Failed to fetch users"));
+  }, [dispatch]);
 
   useEffect(() => {
-    const fetchTeams = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-        const res = await getTeams(token);
-        setTeams(res.data?.data || []);
-      } catch {
-        alert("Failed to fetch teams");
-      }
-    };
-    fetchTeams();
-  }, []);
+    dispatch(getTeams())
+      .unwrap()
+      .then((data) => setTeams(data || []))
+      .catch(() => alert("Failed to fetch teams"));
+  }, [dispatch]);
 
   useEffect(() => {
     if (isEditMode && taskId) {
       setInitialLoading(true);
-      const fetchTask = async () => {
-        try {
-          const token = localStorage.getItem("token");
-          const res = await getTaskById(taskId, token);
-          const task = res.data?.data;
 
+      dispatch(getTaskById(taskId))
+        .unwrap()
+        .then((task) => {
           setTaskName(task.taskName || "");
           setTaskCode(task.taskId || "");
           setDescription(task.description || "");
@@ -84,56 +76,56 @@ const AddEditTask = () => {
           setTaskStatus(task.taskStatus || "");
           setTaskDuration(task.taskDuration || "");
           setTaskPriority(task.taskPriority || "");
-        } catch {
-          alert("Failed to load task details");
-        } finally {
-          setInitialLoading(false);
-        }
-      };
-      fetchTask();
+        })
+        .catch(() => alert("Failed to load task details"))
+        .finally(() => setInitialLoading(false));
     }
-  }, [isEditMode, taskId]);
+  }, [isEditMode, taskId, dispatch]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!taskName || !taskCode || !description || !taskDuration) {
       setShowErrors(true);
       return;
     }
 
     setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-      const payload = {
-        taskName,
-        taskId: taskCode,
-        description,
-        assignedTo,
-        assigneeEmail,
-        taskDeadline: {
-          startDate: taskDeadlineStart || null,
-          endDate: taskDeadlineEnd || null,
-        },
-        taskStatus,
-        taskDuration,
-        taskPriority,
-        assignedBy: localStorage.getItem("userId"),
-      };
 
-      if (isEditMode) {
-        const { taskId: code, ...rest } = payload;
-        await updateTask({ taskId: code, updateTask: rest }, token);
-        alert("Task updated successfully!");
-      } else {
-        await createTask(payload, token);
-        alert("Task created successfully!");
-      }
+    const payload = {
+      taskName,
+      taskId: taskCode,
+      description,
+      assignedTo,
+      assigneeEmail,
+      taskDeadline: {
+        startDate: taskDeadlineStart || null,
+        endDate: taskDeadlineEnd || null,
+      },
+      taskStatus,
+      taskDuration,
+      taskPriority,
+      assignedBy: localStorage.getItem("userId"),
+    };
 
-      navigate("/home/tasks");
-    } catch (err) {
-      console.error("Save failed:", err);
-      alert("Failed to save task");
-    } finally {
-      setLoading(false);
+    if (isEditMode) {
+      const { taskId: code, ...rest } = payload;
+
+      dispatch(updateTask({ taskId: code, updateTask: rest }))
+        .unwrap()
+        .then(() => {
+          alert("Task updated successfully!");
+          navigate("/home/tasks");
+        })
+        .catch(() => alert("Failed to update task"))
+        .finally(() => setLoading(false));
+    } else {
+      dispatch(createTask(payload))
+        .unwrap()
+        .then(() => {
+          alert("Task created successfully!");
+          navigate("/home/tasks");
+        })
+        .catch(() => alert("Failed to create task"))
+        .finally(() => setLoading(false));
     }
   };
 

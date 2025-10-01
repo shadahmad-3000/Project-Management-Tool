@@ -6,12 +6,14 @@ import {
   UserSwitchOutlined,
 } from "@ant-design/icons";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { userLogout } from "../../../utils/UserLogin";
 import { showLogoutConfirm } from "../../auth/components/LogoutConfirmModal";
+import { useDispatch } from "react-redux";
+import { logout } from "../../../store/slices/authSlice";
 
 const DashboardLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const userRole = localStorage.getItem("userRole");
 
@@ -31,19 +33,27 @@ const DashboardLayout = () => {
   const handleTopClick = (key) => navigate(key);
 
   const handleLogout = () => {
-    showLogoutConfirm(async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const email = localStorage.getItem("userEmail");
-        if (token && email) {
-          const res = await userLogout(token, email);
-          alert(res.data?.message || "Logged out successfully");
-        }
-      } catch (err) {
-        alert(err.response?.data?.message || "Logout failed");
-      } finally {
-        localStorage.clear();
-        navigate("/signin");
+    showLogoutConfirm(() => {
+      const email = localStorage.getItem("userEmail");
+
+      if (email) {
+        dispatch(logout({ email }))
+          .unwrap()
+          .then((response) => {
+            alert(response?.message || "Logged out successfully");
+            localStorage.clear();
+            navigate("/signin");
+          })
+          .catch((err) => {
+            if (err.includes("Unauthorized") || err.includes("invalid token")) {
+              // Token is already bad → clear and force logout
+              localStorage.clear();
+              navigate("/signin");
+            } else {
+              // Some other error (server down, timeout, etc.)
+              alert(err || "Logout failed. Please try again.");
+            }
+          });
       }
     });
   };

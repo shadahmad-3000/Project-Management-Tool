@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { getTeams } from "../../../utils/team";
 import { useNavigate } from "react-router-dom";
 import CButton from "../../../components/common/CButton";
 import FloatingLabelInput from "../../../components/common/InputText/FloatingLabelInput";
 import { EditOutlined } from "@ant-design/icons";
+import { useDispatch } from "react-redux";
+import { getTeams } from "../../../store/slices/teamSlice";
 
 const TeamsPage = () => {
   const [teams, setTeams] = useState([]);
@@ -12,33 +13,28 @@ const TeamsPage = () => {
   const [searchValue, setSearchValue] = useState("");
   const [userRole, setUserRole] = useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
     setUserRole(role);
 
-    const fetchTeams = async () => {
-      setLoading(true);
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          alert("No token found, please login.");
-          return;
-        }
+    setLoading(true);
 
-        const res = await getTeams(token);
-        setTeams(res.data?.data || []);
-        setFilteredTeams(res.data?.data || []);
-      } catch (err) {
+    dispatch(getTeams())
+      .unwrap()
+      .then((data) => {
+        setTeams(data || []);
+        setFilteredTeams(data || []);
+      })
+      .catch((err) => {
         console.error("Error fetching teams:", err);
-        alert(err.response?.data?.message || "Failed to fetch teams.");
-      } finally {
+        alert(err || "Failed to fetch teams.");
+      })
+      .finally(() => {
         setLoading(false);
-      }
-    };
-
-    fetchTeams();
-  }, []);
+      });
+  }, [dispatch]);
 
   const handleSearch = (val) => {
     const value = typeof val === "string" ? val : val.text;
@@ -54,7 +50,6 @@ const TeamsPage = () => {
 
   return (
     <div className="page-card">
-      {/* Header */}
       <div className="page-header">
         <h2 className="page-title">Teams</h2>
 
@@ -75,7 +70,6 @@ const TeamsPage = () => {
         </div>
       </div>
 
-      {/* Table */}
       <div className="page-table">
         <table>
           <thead>

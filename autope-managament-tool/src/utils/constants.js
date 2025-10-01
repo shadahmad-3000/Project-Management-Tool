@@ -1,1 +1,2 @@
-export const ACCESS_TOKEN = "access_token";
+export const ACCESS_TOKEN =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZDUxMDlhZDJkNmMwMmJhOGRlY2M4ZSIsImVtYWlsIjoicHJpdGh2aWthdGh1cmlhQGF1dG9wZS5pbiIsImlhdCI6MTc1OTI5NTY2NSwiZXhwIjoxNzU5OTAwNDY1fQ.IdWKnrBLpBkw-B5sU26IGWAoaqDOeV_ZaKzwwGeym50";
